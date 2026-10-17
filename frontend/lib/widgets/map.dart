@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
-import 'package:frontend/dtos/township.dart';
+import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/township_service.dart';
 import 'package:frontend/widgets/map_toolbox.dart';
 import 'package:latlong2/latlong.dart';
@@ -49,7 +49,7 @@ class _MapWidgetState extends State<MapWidget> {
 }
 
 class TownshipTile extends StatelessWidget {
-  final TownshipDto township;
+  final ScanDto township;
   const new({super.key, required this.township});
 
   @override
@@ -64,6 +64,24 @@ class TownshipTile extends StatelessWidget {
     context: context,
     builder: (context) => AlertDialog(
       title: Text(township.name),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 16,
+        children: [
+          Align(
+            alignment: AlignmentGeometry.centerStart,
+            child: Text(
+              "Scannée par ${township.username} le ${township.createdAt.day}/${township.createdAt.month}/${township.createdAt.year}",
+            ),
+          ),
+          Image.memory(
+            township.picture,
+            height: 400,
+            width: 400,
+            fit: BoxFit.scaleDown,
+          ),
+        ],
+      ),
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),

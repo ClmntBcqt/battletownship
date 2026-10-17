@@ -1,7 +1,9 @@
 using Clementbq.BattleTownship.Data;
 using Clementbq.BattleTownship.Data.Models;
+using Clementbq.BattleTownship.Dtos;
 using Clementbq.BattleTownship.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clementbq.BattleTownship.Controllers;
 
@@ -27,23 +29,41 @@ public class MapController(
     [HttpGet]
     public async Task<IActionResult> GetAllTownship()
     {
-        var towns = dbContext.Townships.ToList();
+        var towns = dbContext.Scans
+            .Include(s => s.Township)
+            .ToList()
+            .GroupBy(s => s.TownshipId)
+            .Select(g => g.OrderByDescending(s => s.CreatedAt).First());
 
-        return Ok(towns.Select(t => new { t.Name, t.Geojson }));
+        return Ok(towns.Select(s => new { s.Township.Name, s.Township.Geojson, s.Username, s.Picture, s.CreatedAt }));
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTownShip([FromBody] string requestedName)
+    public async Task<IActionResult> AddTownShip([FromBody] CreateScanRequest request)
     {
-        var geojson = geoDataService.FindFromOsm(requestedName);
+        var geojson = geoDataService.FindFromOsm(request.TownshipName);
 
-        var newTownShip = new Township
+        var name = geojson.GetProperty("properties").GetProperty("name").GetString()!;
+
+        var existingTownship = dbContext.Townships.FirstOrDefault(t => t.Name == name);
+
+        if (existingTownship == null)
         {
-            Name = geojson.GetProperty("properties").GetProperty("name").GetString()!,
-            Geojson = geojson
-        };
+            existingTownship = new Township
+            {
+                Name = name,
+                Geojson = geojson
+            };
+            dbContext.Townships.Add(existingTownship);
+        }
 
-        dbContext.Townships.Add(newTownShip);
+        var newScan = new Scan
+        {
+            Township = existingTownship,
+            Username = request.Username,
+            Picture = request.Picture,
+        };
+        dbContext.Scans.Add(newScan);
 
         dbContext.SaveChanges();
 

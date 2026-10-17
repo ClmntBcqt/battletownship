@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:frontend/dtos/township.dart';
+import 'package:frontend/dtos/create_scan_request.dart';
+import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/http_client.dart';
 
 class ApiClient {
@@ -14,15 +15,15 @@ class ApiClient {
     return response.data;
   }
 
-  Future<List<TownshipDto>> getAllTownships() async {
+  Future<List<ScanDto>> getAllTownships() async {
     final response = await httpClient.get("/map");
 
     return (response.data as List)
-        .map((json) => TownshipDto.fromJson(json as Map<String, dynamic>))
+        .map((json) => ScanDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
-  Future<void> addTownship(String name) async {
-    await httpClient.post("/map", name);
+  Future<void> addTownship(CreateScanRequest request) async {
+    await httpClient.post("/map", request);
   }
 }

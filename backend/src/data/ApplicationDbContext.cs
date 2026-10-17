@@ -7,4 +7,5 @@ public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<Township> Townships => Set<Township>();
+    public DbSet<Scan> Scans => Set<Scan>();
 }
