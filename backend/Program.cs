@@ -1,8 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Clementbq.BattleTownship.Data;
 using Clementbq.BattleTownship.Services;
+using Clementbq.BattleTownship.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddControllers();
 
@@ -14,8 +19,10 @@ builder.Services.AddSingleton<GeoDataService>();
 
 var app = builder.Build();
 
-app.MapControllers();
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Clementbq.BattleTownship.Exceptions;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Clementbq.BattleTownship.Services;
@@ -24,6 +25,9 @@ public class GeoDataService
             .GetProperty("features")
             .EnumerateArray();
 
+        if (!candidates.Any())
+            throw new TownshipNotFoundException(message: "La commune n'a pas pu être trouvée.");
+
         return candidates.FirstOrDefault(
             feature =>
                 feature.TryGetProperty("properties", out var properties)
@@ -32,11 +36,7 @@ public class GeoDataService
                 && adminLevel.ToString() == "8",
             candidates.First()
         );
-
-
     }
-
-    public record TownshipInfos(long OsmId, string Name, string Geometry);
 
     private JsonDocument FetchFromNominatim(string townshipName)
     {

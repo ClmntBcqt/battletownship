@@ -1,5 +1,5 @@
 using Clementbq.BattleTownship.Data;
-using Clementbq.BattleTownship.Models;
+using Clementbq.BattleTownship.Data.Models;
 using Clementbq.BattleTownship.Services;
 using Microsoft.AspNetCore.Mvc;
 

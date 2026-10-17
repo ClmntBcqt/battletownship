@@ -1,4 +1,4 @@
-using Clementbq.BattleTownship.Models;
+using Clementbq.BattleTownship.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clementbq.BattleTownship.Data;

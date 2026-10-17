@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
-namespace Clementbq.BattleTownship.Models;
+namespace Clementbq.BattleTownship.Data.Models;
 
 public class Township
 {

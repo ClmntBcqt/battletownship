@@ -1,17 +1,15 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
-class HttpClient {
-  Future<http.Response> get(String url, {Map<String, String>? headers}) {
-    return http.get(Uri.parse(url), headers: headers);
+class HttpClient({BaseOptions? baseOptions}) {
+  final http = Dio(baseOptions);
+
+  Future<Response> get(String url) {
+    return http.get(url);
   }
 
-  Future<http.Response> post(String url, Object data) {
-    return http.post(
-      Uri.parse(url),
-      body: jsonEncode(data),
-      headers: Map.from({"Content-Type": "application/json"}),
-    );
+  Future<Response> post(String url, Object data) async {
+    return http.post(url, data: jsonEncode(data));
   }
 }

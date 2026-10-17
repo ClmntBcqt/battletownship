@@ -1,31 +1,28 @@
-import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:frontend/dtos/township.dart';
 import 'package:frontend/services/http_client.dart';
 
 class ApiClient {
   static final baseUrl = "http://localhost:5211";
-  final httpClient = HttpClient();
+  final httpClient = HttpClient(
+    baseOptions: BaseOptions(baseUrl: baseUrl, contentType: 'application/json'),
+  );
 
   Future<String> getGeometryOf(String townshipName) async {
-    var response = await httpClient.get("$baseUrl/map/$townshipName");
+    var response = await httpClient.get("/map/$townshipName");
 
-    return response.body;
+    return response.data;
   }
 
   Future<List<TownshipDto>> getAllTownships() async {
-    final response = await httpClient.get("$baseUrl/map");
+    final response = await httpClient.get("/map");
 
-    final list = jsonDecode(response.body) as List<dynamic>;
-
-    var t = list
+    return (response.data as List)
         .map((json) => TownshipDto.fromJson(json as Map<String, dynamic>))
         .toList();
-
-    return t;
   }
 
   Future<void> addTownship(String name) async {
-    await httpClient.post("$baseUrl/map", name);
+    await httpClient.post("/map", name);
   }
 }
