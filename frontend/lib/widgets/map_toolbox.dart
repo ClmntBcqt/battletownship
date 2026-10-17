@@ -37,70 +37,132 @@ class _MapToolboxState extends State<MapToolbox> {
       alignment: AlignmentGeometry.centerEnd,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            Spacer(flex: 1),
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OrientationResetButton(widget: widget),
-                    ZoomSlider(widget: widget),
-                  ],
-                ),
-              ),
-            ),
-            Spacer(flex: 1),
-          ],
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            spacing: 16,
+            children: [
+              OrientationResetButton(mapController: widget.mapController),
+              ZoomSlider(mapController: widget.mapController),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class OrientationResetButton extends StatelessWidget {
-  const new({super.key, required this.widget});
+class OrientationResetButton extends StatefulWidget {
+  const OrientationResetButton({super.key, required this.mapController});
 
-  final MapToolbox widget;
+  final MapController mapController;
+
+  @override
+  State<OrientationResetButton> createState() => _OrientationResetButtonState();
+}
+
+class _OrientationResetButtonState extends State<OrientationResetButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late Animation<double> _rotation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(vsync: this, duration: Durations.long1);
+    _rotation = AlwaysStoppedAnimation(widget.mapController.camera.rotation);
+
+    _controller.addListener(() {
+      widget.mapController.rotate(_rotation.value);
+    });
+  }
+
+  void _resetOrientation() {
+    final currentRotation = widget.mapController.camera.rotation;
+    final begin = currentRotation > 180
+        ? -(360 - currentRotation)
+        : currentRotation;
+
+    _rotation = Tween<double>(begin: begin, end: 0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
+
+    _controller.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () => widget.mapController.rotate(0),
-      icon: Icon(Icons.explore, color: Theme.of(context).colorScheme.primary),
+      onPressed: _resetOrientation,
+      icon: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.rotate(
+            angle: widget.mapController.camera.rotationRad,
+            child: child,
+          );
+        },
+        child: Icon(Icons.navigation, color: Colors.red.shade700),
+      ),
     );
   }
 }
 
 class ZoomSlider extends StatelessWidget {
-  const new({super.key, required this.widget});
+  const new({super.key, required this.mapController});
 
-  final MapToolbox widget;
+  final MapController mapController;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      child: RotatedBox(
-        quarterTurns: 3,
-        child: Slider(
-          value: widget.mapController.camera.zoom,
-          min: widget.mapController.camera.minZoom!,
-          max: widget.mapController.camera.maxZoom!,
-          onChanged: (value) {
-            widget.mapController.move(
-              widget.mapController.camera.center,
-              value,
-            );
-          },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: () => mapController.move(
+            mapController.camera.center,
+            mapController.camera.zoom + 1,
+          ),
+          icon: Icon(Icons.add),
+          iconSize: 16,
         ),
-      ),
+        SizedBox(
+          width: 40,
+          child: RotatedBox(
+            quarterTurns: 3,
+            child: Slider(
+              value: mapController.camera.zoom,
+              min: mapController.camera.minZoom!,
+              max: mapController.camera.maxZoom!,
+              onChanged: (value) {
+                mapController.move(mapController.camera.center, value);
+              },
+              padding: EdgeInsets.all(4),
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: () => mapController.move(
+            mapController.camera.center,
+            mapController.camera.zoom - 1,
+          ),
+          icon: Icon(Icons.remove),
+          iconSize: 16,
+        ),
+      ],
     );
   }
 }
