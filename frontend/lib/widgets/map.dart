@@ -71,7 +71,7 @@ class TownshipTile extends StatelessWidget {
           Align(
             alignment: AlignmentGeometry.centerStart,
             child: Text(
-              "Scannée par ${township.username} le ${township.createdAt.day}/${township.createdAt.month}/${township.createdAt.year}",
+              "Scannée par ${township.username} le ${township.createdAt.day}/${township.createdAt.month}/${township.createdAt.year} à ${township.createdAt.hour}h${township.createdAt.minute}",
             ),
           ),
           Image.memory(

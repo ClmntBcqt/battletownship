@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/services/township_service.dart';
+import 'package:frontend/widgets/camera.dart';
 import 'package:provider/provider.dart';
 
 class Fab extends StatefulWidget {
@@ -55,7 +55,7 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Ajouter une commune"),
+      title: Text("Scanner une commune"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         spacing: 16,
@@ -64,15 +64,10 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
             controller: widget.textController,
             decoration: InputDecoration(hint: Text("Nom"), errorText: error),
           ),
-          FilledButton(
-            onPressed: () async {
-              var file = await FilePicker.pickFile();
-              var content = await file?.readAsBytes();
-              setState(() {
-                picture = content;
-              });
-            },
-            child: Text("Ajouter une image"),
+          Scanner(
+            onPictureContent: (pictureContent) => setState(() {
+              picture = pictureContent;
+            }),
           ),
         ],
       ),
