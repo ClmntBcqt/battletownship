@@ -38,7 +38,7 @@ class _ScannerState extends State<Scanner> {
                 aspectRatio: _cameraController.value.aspectRatio,
                 child: CameraPreview(_cameraController),
               ),
-              IconButton.filled(
+              IconButton.filledTonal(
                 onPressed: _cameraController.value.isPreviewPaused
                     ? resetPreview
                     : takePicture,

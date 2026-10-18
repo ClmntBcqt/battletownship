@@ -37,20 +37,24 @@ class _FabState extends State<Fab> {
 }
 
 class AddTownshipDialog extends StatefulWidget {
-  new({super.key, required this.townshipService});
+  const new({super.key, required this.townshipService});
 
   final TownshipService townshipService;
-  final textController = TextEditingController();
 
   @override
   State<AddTownshipDialog> createState() => _AddTownshipDialogState();
 }
 
 class _AddTownshipDialogState extends State<AddTownshipDialog> {
-  bool loading = false;
-  String? error;
+  bool _loading = false;
+  String? _error;
 
-  Uint8List? picture;
+  final _textController = TextEditingController();
+  Uint8List? _pictureBytes;
+
+  bool get _isNameValid => _textController.text.trim().isNotEmpty;
+  bool get _isPictureValid => _pictureBytes != null;
+  bool get _isFormValid => !_loading && _isNameValid && _isPictureValid;
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +65,12 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
         spacing: 16,
         children: [
           TextField(
-            controller: widget.textController,
-            decoration: InputDecoration(hint: Text("Nom"), errorText: error),
+            controller: _textController,
+            decoration: InputDecoration(hint: Text("Nom"), errorText: _error),
           ),
           Scanner(
             onPictureContent: (pictureContent) => setState(() {
-              picture = pictureContent;
+              _pictureBytes = pictureContent;
             }),
           ),
         ],
@@ -76,36 +80,41 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text("Annuler"),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            if (loading) return;
-            if (widget.textController.text.trim().isEmpty) return;
-            if (picture == null) return;
-            final townshipName = widget.textController.text.trim();
-            try {
-              setState(() {
-                loading = true;
-              });
-              await widget.townshipService.addTownship(
-                townshipName,
-                "randiz",
-                picture!,
-              );
-              if (!context.mounted) return;
-              Navigator.of(context).pop();
-            } on DioException catch (e) {
-              setState(() {
-                error = e.response?.data['detail'];
-              });
-            } finally {
-              setState(() {
-                loading = false;
-              });
-            }
-          },
-          child: loading ? CircularProgressIndicator() : Text("Ok"),
+        FilledButton(
+          onPressed: _isFormValid ? sendScan : null,
+          child: _loading ? CircularProgressIndicator() : Text("Ok"),
         ),
       ],
     );
+  }
+
+  Future<void> sendScan() async {
+    if (!_isFormValid) return;
+
+    final townshipName = _textController.text.trim();
+
+    try {
+      setState(() {
+        _loading = true;
+      });
+
+      await widget.townshipService.addTownship(
+        townshipName,
+        "randiz",
+        _pictureBytes!,
+      );
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop();
+    } on DioException catch (e) {
+      setState(() {
+        _error = e.response?.data['detail'];
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 }
