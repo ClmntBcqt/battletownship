@@ -34,6 +34,9 @@ class _MapWidgetState extends State<MapWidget> {
         initialZoom: 10,
         minZoom: 3,
         maxZoom: 18,
+        interactionOptions: InteractionOptions(
+          enableMultiFingerGestureRace: true,
+        ),
       ),
       mapController: mapController,
       children: [
