@@ -4,6 +4,7 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
 import 'package:frontend/services/township_service.dart';
 import 'package:frontend/widgets/app_loader.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -16,6 +17,8 @@ void main() async {
 
   final authService = AuthService(apiClient);
   final townshipService = TownshipService(apiClient);
+
+  await initializeDateFormatting("fr_FR", null);
 
   runApp(MyApp(authService: authService, townshipService: townshipService));
 }

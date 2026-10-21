@@ -37,21 +37,14 @@ class _MapToolboxState extends State<MapToolbox> {
       alignment: AlignmentGeometry.centerEnd,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(40),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            spacing: 16,
-            children: [
-              OrientationResetButton(mapController: widget.mapController),
-              ZoomSlider(mapController: widget.mapController),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            OrientationResetButton(mapController: widget.mapController),
+            ZoomSlider(mapController: widget.mapController),
+          ],
         ),
       ),
     );
@@ -105,17 +98,23 @@ class _OrientationResetButtonState extends State<OrientationResetButton>
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: _resetOrientation,
-      icon: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Transform.rotate(
-            angle: widget.mapController.camera.rotationRad,
-            child: child,
-          );
-        },
-        child: Icon(Icons.navigation, color: Colors.red.shade700),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        shape: .circle,
+      ),
+      child: IconButton(
+        onPressed: _resetOrientation,
+        icon: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.rotate(
+              angle: widget.mapController.camera.rotationRad,
+              child: child,
+            );
+          },
+          child: Icon(Icons.navigation, color: Colors.red.shade700),
+        ),
       ),
     );
   }
@@ -128,41 +127,47 @@ class ZoomSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: () => mapController.move(
-            mapController.camera.center,
-            mapController.camera.zoom + 1,
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            onPressed: () => mapController.move(
+              mapController.camera.center,
+              mapController.camera.zoom + 1,
+            ),
+            icon: Icon(Icons.add),
+            iconSize: 16,
           ),
-          icon: Icon(Icons.add),
-          iconSize: 16,
-        ),
-        SizedBox(
-          width: 40,
-          child: RotatedBox(
-            quarterTurns: 3,
-            child: Slider(
-              value: mapController.camera.zoom,
-              min: mapController.camera.minZoom!,
-              max: mapController.camera.maxZoom!,
-              onChanged: (value) {
-                mapController.move(mapController.camera.center, value);
-              },
-              padding: EdgeInsets.all(4),
+          SizedBox(
+            width: 40,
+            child: RotatedBox(
+              quarterTurns: 3,
+              child: Slider(
+                value: mapController.camera.zoom,
+                min: mapController.camera.minZoom!,
+                max: mapController.camera.maxZoom!,
+                onChanged: (value) {
+                  mapController.move(mapController.camera.center, value);
+                },
+                padding: EdgeInsets.all(4),
+              ),
             ),
           ),
-        ),
-        IconButton(
-          onPressed: () => mapController.move(
-            mapController.camera.center,
-            mapController.camera.zoom - 1,
+          IconButton(
+            onPressed: () => mapController.move(
+              mapController.camera.center,
+              mapController.camera.zoom - 1,
+            ),
+            icon: Icon(Icons.remove),
+            iconSize: 16,
           ),
-          icon: Icon(Icons.remove),
-          iconSize: 16,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

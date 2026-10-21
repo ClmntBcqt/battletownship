@@ -10,7 +10,6 @@ class AppLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
-    print(authService.isAuthenticated);
     return FutureBuilder(
       future: authService.isAuthenticated,
       builder: (context, snapshot) => snapshot.hasData

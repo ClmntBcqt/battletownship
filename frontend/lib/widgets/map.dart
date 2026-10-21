@@ -5,6 +5,7 @@ import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
 import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/township_service.dart';
 import 'package:frontend/widgets/map_toolbox.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
@@ -53,8 +54,8 @@ class _MapWidgetState extends State<MapWidget> {
 }
 
 class TownshipTile extends StatelessWidget {
-  final ScanDto township;
-  const new({super.key, required this.township});
+  final ScanDto _township;
+  const new({super.key, required this._township});
 
   static const _townshipPalette = [
     Colors.amber,
@@ -66,15 +67,31 @@ class TownshipTile extends StatelessWidget {
     Colors.indigo,
   ];
   Color get _townshipColor => _townshipPalette
-      .elementAt(township.username.hashCode % _townshipPalette.length)
+      .elementAt(_township.username.hashCode % _townshipPalette.length)
       .shade700;
+
+  TextSpan get _formatAuthor => TextSpan(
+    text: "Scanné par ",
+    children: [
+      TextSpan(
+        text: _township.username,
+        style: TextStyle(fontWeight: .w600),
+      ),
+    ],
+  );
+  TextSpan get _formatScanDate => TextSpan(
+    text: DateFormat(
+      "le d MMMM yyyy à HH:mm:ss",
+      "fr_FR",
+    ).format(_township.createdAt),
+  );
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => showTownshipInfos(context),
       child: GeoJsonLayer.memory(
-        township.geojson,
+        _township.geojson,
         styleDefaults: GeoJsonStyleDefaults(
           fillColor: _townshipColor,
           strokeColor: _townshipColor,
@@ -86,22 +103,44 @@ class TownshipTile extends StatelessWidget {
   Future<void> showTownshipInfos(BuildContext context) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(township.name),
+      title: Align(
+        alignment: .center,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.red, width: 8),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+          child: Text(
+            _township.name.toUpperCase(),
+            textAlign: .center,
+            style: TextStyle(fontWeight: .w600),
+          ),
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         spacing: 16,
         children: [
           Align(
             alignment: AlignmentGeometry.centerStart,
-            child: Text(
-              "Scannée par ${township.username} le ${township.createdAt.day}/${township.createdAt.month}/${township.createdAt.year} à ${township.createdAt.hour}h${township.createdAt.minute}",
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  _formatAuthor,
+                  TextSpan(text: "\n"),
+                  _formatScanDate,
+                ],
+              ),
             ),
           ),
-          Image.memory(
-            township.picture,
-            height: 400,
-            width: 400,
-            fit: BoxFit.scaleDown,
+          ClipRRect(
+            borderRadius: .circular(16),
+            child: SizedBox(
+              width: 300,
+              height: 225,
+              child: Image.memory(_township.picture, fit: .cover),
+            ),
           ),
         ],
       ),

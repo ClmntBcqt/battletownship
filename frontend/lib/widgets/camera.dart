@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,11 +14,25 @@ class Scanner extends StatefulWidget {
 class _ScannerState extends State<Scanner> {
   late CameraController _cameraController;
   bool _isCameraReady = false;
+  bool _isAccessDenied = false;
 
   final List<CameraDescription> _availableCameras = [];
   late int _selectedCameraIndex;
   CameraDescription get _selectedCamera =>
       _availableCameras.elementAt(_selectedCameraIndex);
+
+  double? get _previewContainerWidth =>
+      switch (_cameraController.value.deviceOrientation) {
+        .portraitUp ||
+        .portraitDown => _cameraController.value.previewSize?.height,
+        _ => _cameraController.value.previewSize?.width,
+      };
+  double? get _previewContainerHeight =>
+      switch (_cameraController.value.deviceOrientation) {
+        .portraitUp ||
+        .portraitDown => _cameraController.value.previewSize?.width,
+        _ => _cameraController.value.previewSize?.height,
+      };
 
   @override
   void initState() {
@@ -49,42 +61,77 @@ class _ScannerState extends State<Scanner> {
 
   @override
   Widget build(BuildContext context) {
-    return _isCameraReady
-        ? Column(
-            spacing: 16,
-            children: [
-              Stack(
-                alignment: .bottomCenter,
-                children: [
-                  CameraPreview(_cameraController),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: .min,
-                      spacing: 8,
-                      children: [
-                        IconButton.filled(
-                          onPressed: _cameraController.value.isPreviewPaused
-                              ? resetPreview
-                              : takePicture,
-                          icon: Icon(
-                            _cameraController.value.isPreviewPaused
-                                ? Icons.flip_camera_ios_outlined
-                                : Icons.camera_alt_outlined,
+    return Column(
+      spacing: 16,
+      children: [
+        Stack(
+          alignment: .bottomCenter,
+          children: [
+            ClipRRect(
+              borderRadius: .circular(16),
+              child: SizedBox(
+                width: 300,
+                height: 225, // 4:3 format
+                child: _isAccessDenied
+                    ? Column(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Center(
+                            child: Text(
+                              "Accès à la caméra refusé. Vous pouvez modifier les autorisations dans vos paramètres.",
+                              textAlign: .center,
+                            ),
                           ),
+                        ],
+                      )
+                    : _isCameraReady
+                    ? FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: _previewContainerWidth,
+                          height: _previewContainerHeight,
+                          child: CameraPreview(_cameraController),
                         ),
-                        IconButton.filledTonal(
-                          onPressed: () async => await _nextCamera(),
-                          icon: Icon(Icons.flip_camera_android),
-                        ),
-                      ],
+                      )
+                    : Center(child: CircularProgressIndicator()),
+              ),
+            ),
+            if (_isCameraReady)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: .bottomCenter,
+                  child: SizedBox.square(
+                    dimension: 64,
+                    child: IconButton.filled(
+                      onPressed: _cameraController.value.isPreviewPaused
+                          ? resetPreview
+                          : takePicture,
+                      icon: Icon(
+                        size: 40,
+                        _cameraController.value.isPreviewPaused
+                            ? Icons.flip_camera_ios_outlined
+                            : Icons.camera_alt_outlined,
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ],
-          )
-        : Center(child: CircularProgressIndicator());
+            if (_isCameraReady)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: .bottomStart,
+                  child: IconButton.filledTonal(
+                    onPressed: () async => await _nextCamera(),
+                    icon: Icon(Icons.flip_camera_android),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
   }
 
   Future<void> _initializeCamera(CameraDescription camera) async {
@@ -98,7 +145,15 @@ class _ScannerState extends State<Scanner> {
       enableAudio: false,
     );
 
-    await _cameraController.initialize();
+    try {
+      await _cameraController.initialize();
+    } on CameraException catch (e) {
+      if (e.code == 'CameraAccessDenied') {
+        setState(() {
+          _isAccessDenied = true;
+        });
+      }
+    }
 
     setState(() {
       _isCameraReady = true;

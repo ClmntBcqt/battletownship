@@ -19,9 +19,13 @@ class _FabState extends State<Fab> {
   @override
   Widget build(BuildContext context) {
     var townshipService = context.read<TownshipService>();
-    return FloatingActionButton(
-      onPressed: () => showAddTownshipPopup(context, townshipService),
-      child: Icon(Icons.add),
+    return SizedBox(
+      width: 72,
+      height: 72,
+      child: FloatingActionButton(
+        onPressed: () => showAddTownshipPopup(context, townshipService),
+        child: Icon(Icons.add, size: 40),
+      ),
     );
   }
 
@@ -59,23 +63,30 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Scanner une commune"),
+      title: Center(child: Text("Scanner une commune")),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 16,
-          children: [
-            TextField(
-              controller: _textController,
-              decoration: InputDecoration(hint: Text("Nom"), errorText: _error),
-              onChanged: (_) => setState(() {}),
-            ),
-            Scanner(
-              onPictureContent: (pictureContent) => setState(() {
-                _pictureBytes = pictureContent;
-              }),
-            ),
-          ],
+        child: SizedBox(
+          width: 300,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 16,
+            children: [
+              TextField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  labelText: "Nom",
+                  errorText: _error,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              Scanner(
+                onPictureContent: (pictureContent) => setState(() {
+                  _pictureBytes = pictureContent;
+                }),
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
