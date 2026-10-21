@@ -10,7 +10,6 @@ part 'create_scan_request.g.dart';
 abstract class CreateScanRequest with _$CreateScanRequest {
   const factory CreateScanRequest({
     required String townshipName,
-    required String username,
     @Base64BytesConverter() required Uint8List picture,
   }) = _CreateScanRequest;
 

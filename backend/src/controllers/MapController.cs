@@ -3,6 +3,7 @@ using Clementbq.BattleTownship.Data.Models;
 using Clementbq.BattleTownship.Dtos;
 using Clementbq.BattleTownship.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,8 @@ namespace Clementbq.BattleTownship.Controllers;
 [ApiController]
 public class MapController(
     ApplicationDbContext dbContext,
-    GeoDataService geoDataService
+    UserManager<User> userManager,
+GeoDataService geoDataService
 ) : ControllerBase
 {
     [HttpGet("{name}")]
@@ -33,17 +35,29 @@ public class MapController(
     {
         var towns = dbContext.Scans
             .Include(s => s.Township)
+            .Include(s => s.User)
             .ToList()
             .GroupBy(s => s.TownshipId)
             .Select(g => g.OrderByDescending(s => s.CreatedAt).First());
 
-        return Ok(towns.Select(s => new { s.Township.Name, s.Township.Geojson, s.Username, s.Picture, s.CreatedAt }));
+        return Ok(towns.Select(s => new
+        {
+            s.Township.Name,
+            s.Township.Geojson,
+            Username = s.User.UserName,
+            s.Picture,
+            s.CreatedAt
+        }));
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddTownShip([FromBody] CreateScanRequest request)
+    public async Task<IActionResult> AddTownShip([FromBody]
+    CreateScanRequest request)
     {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
+
         var geojson = geoDataService.FindFromOsm(request.TownshipName);
 
         var name = geojson.GetProperty("properties").GetProperty("name").GetString()!;
@@ -63,7 +77,7 @@ public class MapController(
         var newScan = new Scan
         {
             Township = existingTownship,
-            Username = request.Username,
+            User = user,
             Picture = request.Picture,
         };
         dbContext.Scans.Add(newScan);

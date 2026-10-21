@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_geojson2/geojson2/default_features.dart';
 import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
 import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/township_service.dart';
@@ -55,11 +56,30 @@ class TownshipTile extends StatelessWidget {
   final ScanDto township;
   const new({super.key, required this.township});
 
+  static const _townshipPalette = [
+    Colors.amber,
+    Colors.lightBlue,
+    Colors.brown,
+    Colors.deepOrange,
+    Colors.purple,
+    Colors.pink,
+    Colors.indigo,
+  ];
+  Color get _townshipColor => _townshipPalette
+      .elementAt(township.username.hashCode % _townshipPalette.length)
+      .shade700;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => showTownshipInfos(context),
-      child: GeoJsonLayer.memory(township.geojson),
+      child: GeoJsonLayer.memory(
+        township.geojson,
+        styleDefaults: GeoJsonStyleDefaults(
+          fillColor: _townshipColor,
+          strokeColor: _townshipColor,
+        ),
+      ),
     );
   }
 

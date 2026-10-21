@@ -19,17 +19,9 @@ class TownshipService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addTownship(
-    String townshipName,
-    String username,
-    Uint8List picture,
-  ) async {
+  Future<void> addTownship(String townshipName, Uint8List picture) async {
     await _apiClient.addTownship(
-      CreateScanRequest(
-        townshipName: townshipName,
-        username: username,
-        picture: picture,
-      ),
+      CreateScanRequest(townshipName: townshipName, picture: picture),
     );
 
     await fetchTownships();

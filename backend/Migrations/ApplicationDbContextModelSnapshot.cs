@@ -41,13 +41,15 @@ namespace backend.Migrations
                     b.Property<int>("TownshipId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TownshipId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Scans");
                 });
@@ -276,7 +278,15 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Clementbq.BattleTownship.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Township");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

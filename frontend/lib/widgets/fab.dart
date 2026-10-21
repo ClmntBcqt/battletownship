@@ -101,11 +101,7 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
         _loading = true;
       });
 
-      await widget.townshipService.addTownship(
-        townshipName,
-        "randiz",
-        _pictureBytes!,
-      );
+      await widget.townshipService.addTownship(townshipName, _pictureBytes!);
 
       if (!mounted) return;
 
