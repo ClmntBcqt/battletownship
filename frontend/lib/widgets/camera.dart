@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Scanner extends StatefulWidget {
   const new({super.key, required this.onPictureContent});
@@ -16,10 +17,28 @@ class _ScannerState extends State<Scanner> {
   late CameraController _cameraController;
   bool _isCameraReady = false;
 
+  final List<CameraDescription> _availableCameras = [];
+  late int _selectedCameraIndex;
+  CameraDescription get _selectedCamera =>
+      _availableCameras.elementAt(_selectedCameraIndex);
+
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+
+    availableCameras().then((cameras) {
+      setState(() {
+        _availableCameras.addAll(cameras);
+      });
+
+      setState(() {
+        _selectedCameraIndex = 0;
+      });
+
+      if (_availableCameras.isEmpty) return;
+
+      _initializeCamera(_selectedCamera);
+    });
   }
 
   @override
@@ -34,32 +53,47 @@ class _ScannerState extends State<Scanner> {
         ? Column(
             spacing: 16,
             children: [
-              AspectRatio(
-                aspectRatio: _cameraController.value.aspectRatio,
-                child: CameraPreview(_cameraController),
-              ),
-              IconButton.filledTonal(
-                onPressed: _cameraController.value.isPreviewPaused
-                    ? resetPreview
-                    : takePicture,
-                icon: Icon(
-                  _cameraController.value.isPreviewPaused
-                      ? Icons.flip_camera_ios_outlined
-                      : Icons.camera_alt_outlined,
-                ),
+              Stack(
+                alignment: .bottomCenter,
+                children: [
+                  CameraPreview(_cameraController),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: .min,
+                      spacing: 8,
+                      children: [
+                        IconButton.filled(
+                          onPressed: _cameraController.value.isPreviewPaused
+                              ? resetPreview
+                              : takePicture,
+                          icon: Icon(
+                            _cameraController.value.isPreviewPaused
+                                ? Icons.flip_camera_ios_outlined
+                                : Icons.camera_alt_outlined,
+                          ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: () async => await _nextCamera(),
+                          icon: Icon(Icons.flip_camera_android),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           )
         : Center(child: CircularProgressIndicator());
   }
 
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-
-    if (cameras.isEmpty) return;
+  Future<void> _initializeCamera(CameraDescription camera) async {
+    setState(() {
+      _isCameraReady = false;
+    });
 
     _cameraController = CameraController(
-      cameras.first,
+      camera,
       ResolutionPreset.medium,
       enableAudio: false,
     );
@@ -69,6 +103,13 @@ class _ScannerState extends State<Scanner> {
     setState(() {
       _isCameraReady = true;
     });
+  }
+
+  Future<void> _nextCamera() async {
+    _selectedCameraIndex =
+        (_selectedCameraIndex + 1) % _availableCameras.length;
+
+    await _initializeCamera(_selectedCamera);
   }
 
   Future<void> takePicture() async {

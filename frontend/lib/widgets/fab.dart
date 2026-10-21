@@ -60,20 +60,23 @@ class _AddTownshipDialogState extends State<AddTownshipDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Scanner une commune"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 16,
-        children: [
-          TextField(
-            controller: _textController,
-            decoration: InputDecoration(hint: Text("Nom"), errorText: _error),
-          ),
-          Scanner(
-            onPictureContent: (pictureContent) => setState(() {
-              _pictureBytes = pictureContent;
-            }),
-          ),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            TextField(
+              controller: _textController,
+              decoration: InputDecoration(hint: Text("Nom"), errorText: _error),
+              onChanged: (_) => setState(() {}),
+            ),
+            Scanner(
+              onPictureContent: (pictureContent) => setState(() {
+                _pictureBytes = pictureContent;
+              }),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
