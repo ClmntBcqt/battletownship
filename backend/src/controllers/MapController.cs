@@ -2,6 +2,7 @@ using Clementbq.BattleTownship.Data;
 using Clementbq.BattleTownship.Data.Models;
 using Clementbq.BattleTownship.Dtos;
 using Clementbq.BattleTownship.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ public class MapController(
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllTownship()
     {
         var towns = dbContext.Scans
@@ -38,6 +40,7 @@ public class MapController(
         return Ok(towns.Select(s => new { s.Township.Name, s.Township.Geojson, s.Username, s.Picture, s.CreatedAt }));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddTownShip([FromBody] CreateScanRequest request)
     {

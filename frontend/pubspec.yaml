@@ -42,6 +42,9 @@ dependencies:
   json_annotation: ^4.12.0
   dio: ^5.11.1
   camera: ^0.12.1
+  cookie_jar: ^4.0.9
+  dio_cookie_manager: ^3.5.0
+  path_provider: ^2.1.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,44 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/api_client.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/http_client.dart';
 import 'package:frontend/services/township_service.dart';
-import 'package:frontend/widgets/fab.dart';
+import 'package:frontend/widgets/app_loader.dart';
 import 'package:provider/provider.dart';
 
-import './widgets/map.dart';
-
 void main() async {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final httpClient = await HttpClient.create(
+    baseOptions: ApiClient.defaultOptions,
+  );
+  final apiClient = ApiClient(httpClient);
+
+  final authService = AuthService(apiClient);
+  final townshipService = TownshipService(apiClient);
+
+  runApp(MyApp(authService: authService, townshipService: townshipService));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({
+    super.key,
+    required this._authService,
+    required this._townshipService,
+  });
 
-  final townshipService = TownshipService();
+  final AuthService _authService;
+  final TownshipService _townshipService;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: ChangeNotifierProvider.value(
-        value: townshipService,
-        child: Scaffold(body: MapWidget(), floatingActionButton: Fab()),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: _authService),
+          ChangeNotifierProvider.value(value: _townshipService),
+        ],
+        child: AppLoader(),
       ),
     );
   }
