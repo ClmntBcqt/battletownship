@@ -67,8 +67,6 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-app.UseHttpsRedirection();
-
 app.UseCors("Frontend");
 
 app.UseAuthentication();
