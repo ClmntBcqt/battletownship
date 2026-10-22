@@ -100,56 +100,99 @@ class TownshipTile extends StatelessWidget {
     );
   }
 
-  Future<void> showTownshipInfos(BuildContext context) => showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Align(
-        alignment: .center,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red, width: 8),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 40),
-          child: Text(
-            _township.name.toUpperCase(),
-            textAlign: .center,
-            style: TextStyle(fontWeight: .w600),
+  Future<void> showTownshipInfos(BuildContext context) {
+    final townshipService = context.read<TownshipService>();
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Align(
+          alignment: .center,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red, width: 8),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+            child: Text(
+              _township.name.toUpperCase(),
+              textAlign: .center,
+              style: TextStyle(fontWeight: .w600),
+            ),
           ),
         ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 16,
-        children: [
-          Align(
-            alignment: AlignmentGeometry.centerStart,
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  _formatAuthor,
-                  TextSpan(text: "\n"),
-                  _formatScanDate,
-                ],
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            Align(
+              alignment: AlignmentGeometry.centerStart,
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    _formatAuthor,
+                    TextSpan(text: "\n"),
+                    _formatScanDate,
+                  ],
+                ),
               ),
             ),
-          ),
-          ClipRRect(
-            borderRadius: .circular(16),
-            child: SizedBox(
-              width: 300,
-              height: 225,
-              child: Image.memory(_township.picture, fit: .cover),
+            ClipRRect(
+              borderRadius: .circular(16),
+              child: SizedBox(
+                width: 300,
+                height: 225,
+                child: Image.memory(_township.picture, fit: .cover),
+              ),
             ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () async =>
+                await _confirmReport(context, townshipService),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text("Signaler"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("Ok"),
           ),
         ],
       ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text("Ok"),
+    );
+  }
+
+  Future<void> _confirmReport(
+    BuildContext context,
+    TownshipService service,
+  ) async {
+    final confirmed = await _showReportConfirmationPopup(context);
+
+    if (!context.mounted) return;
+    if (confirmed) {
+      await service.reportScan(_township.scanId);
+    }
+  }
+
+  Future<bool> _showReportConfirmationPopup(BuildContext context) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Êtes-vous sûr ?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text("Annuler"),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text("Confirmer"),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      ) ??
+      false;
 }

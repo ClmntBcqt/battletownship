@@ -20,7 +20,7 @@ class HttpClient {
     return http.get(url);
   }
 
-  Future<Response> post(String url, Object data) async {
+  Future<Response> post(String url, Object? data) async {
     return http.post(url, data: jsonEncode(data));
   }
 }

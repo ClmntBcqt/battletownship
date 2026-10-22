@@ -23,6 +23,30 @@ namespace backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Clementbq.BattleTownship.Data.Models.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ScanId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ScanId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("Clementbq.BattleTownship.Data.Models.Scan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -262,6 +286,25 @@ namespace backend.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Clementbq.BattleTownship.Data.Models.Report", b =>
+                {
+                    b.HasOne("Clementbq.BattleTownship.Data.Models.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Clementbq.BattleTownship.Data.Models.Scan", "Scan")
+                        .WithMany()
+                        .HasForeignKey("ScanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Scan");
                 });
 
             modelBuilder.Entity("Clementbq.BattleTownship.Data.Models.Scan", b =>

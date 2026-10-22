@@ -10,4 +10,5 @@ public class ApplicationDbContext(
 {
     public DbSet<Township> Townships => Set<Township>();
     public DbSet<Scan> Scans => Set<Scan>();
+    public DbSet<Report> Reports => Set<Report>();
 }

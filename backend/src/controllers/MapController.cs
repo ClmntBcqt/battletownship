@@ -42,7 +42,7 @@ GeoDataService geoDataService
 
         return Ok(towns.Select(s => new
         {
-            s.Id,
+            ScanId = s.Id,
             s.Township.Name,
             s.Township.Geojson,
             Username = s.User.UserName,

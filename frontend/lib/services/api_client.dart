@@ -47,4 +47,7 @@ class ApiClient {
 
     return UserInfos.fromJson(response.data as Map<String, dynamic>);
   }
+
+  Future<void> reportScan(String scanId) async =>
+      await httpClient.post("/report/$scanId", null);
 }

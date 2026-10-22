@@ -26,4 +26,6 @@ class TownshipService extends ChangeNotifier {
 
     await fetchTownships();
   }
+
+  Future<void> reportScan(String scanId) => _apiClient.reportScan(scanId);
 }

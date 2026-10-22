@@ -9,6 +9,7 @@ part 'scan.g.dart';
 @freezed
 abstract class ScanDto with _$ScanDto {
   const factory ScanDto({
+    required String scanId,
     required String name,
     required Map<String, dynamic> geojson,
     required String username,
