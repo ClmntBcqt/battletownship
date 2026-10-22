@@ -1,6 +1,5 @@
 using Clementbq.BattleTownship.Data;
 using Clementbq.BattleTownship.Data.Models;
-using Clementbq.BattleTownship.Dtos;
 using Clementbq.BattleTownship.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,18 +16,6 @@ public class MapController(
 GeoDataService geoDataService
 ) : ControllerBase
 {
-    [HttpGet("{name}")]
-    public async Task<IActionResult> GetTownShip(string name)
-    {
-        var town = dbContext.Townships
-            .Where(t => t.Name == name)
-            .First();
-
-        if (town == null) return NotFound("Pas trouvé");
-
-        return Ok(town.Geojson);
-    }
-
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetAllTownship()
@@ -50,6 +37,8 @@ GeoDataService geoDataService
             s.CreatedAt
         }));
     }
+
+    public record CreateScanRequest(string TownshipName, byte[] Picture);
 
     [Authorize]
     [HttpPost]

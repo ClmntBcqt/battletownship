@@ -16,12 +16,6 @@ class ApiClient {
 
   ApiClient(this.httpClient);
 
-  Future<String> getGeometryOf(String townshipName) async {
-    var response = await httpClient.get("/map/$townshipName");
-
-    return response.data;
-  }
-
   Future<List<ScanDto>> getAllTownships() async {
     final response = await httpClient.get("/map");
 

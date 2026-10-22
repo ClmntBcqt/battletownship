@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/services/township_service.dart';
-import 'package:frontend/widgets/camera.dart';
+import 'package:frontend/widgets/scanner.dart';
 import 'package:provider/provider.dart';
 
 class Fab extends StatefulWidget {
