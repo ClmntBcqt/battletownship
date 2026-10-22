@@ -2,8 +2,21 @@ name: ASP.NET Core backend build
 
 on: workflow_dispatch
 
-jobs: 
-    build:
-        runs-on: ubuntu-latest
-        steps: 
-            - uses: actions/checkout@v4
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: dotnet publish -c Release -p:PublishSingleFile=true
+        working-directory: backend/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: battletownship-backend-${{github.ref_name}}
+          path: backend/bin/Release/net10.0/linux-x64/publish/backend
+          if-no-files-found: error
