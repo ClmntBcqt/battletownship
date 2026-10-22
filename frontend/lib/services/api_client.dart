@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/config/config.dart';
 import 'package:frontend/dtos/create_scan_request.dart';
 import 'package:frontend/dtos/login_request.dart';
 import 'package:frontend/dtos/register_request.dart';
@@ -8,7 +9,7 @@ import 'package:frontend/services/http_client.dart';
 
 class ApiClient {
   static final defaultOptions = BaseOptions(
-    baseUrl: "https://localhost:7128",
+    baseUrl: AppConfig.backendUrl,
     contentType: 'application/json',
   );
 

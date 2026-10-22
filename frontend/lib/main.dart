@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/config/config.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
@@ -8,6 +9,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  AppConfig.validate();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   final httpClient = await HttpClient.create(

@@ -7,7 +7,7 @@ namespace Clementbq.BattleTownship.Services;
 public class GeoDataService
 {
     private readonly HttpClient _httpClient;
-    private static readonly string NOMINATIM_URL = "https://nominatim.openstreetmap.org";
+    private const string NOMINATIM_URL = "https://nominatim.openstreetmap.org";
 
     public GeoDataService()
     {

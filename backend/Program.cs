@@ -4,17 +4,24 @@ using Clementbq.BattleTownship.Services;
 using Clementbq.BattleTownship.Exceptions;
 using Clementbq.BattleTownship.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Clementbq.BattleTownship.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddOptions<AppConfiguration>()
+    .Bind(builder.Configuration.GetSection(AppConfiguration.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+var appConfig = builder.Configuration.GetSection(AppConfiguration.SectionName).Get<AppConfiguration>()!;
 
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Local", policy => policy
-        .WithOrigins("http://localhost:3000")
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins(appConfig.FrontendUrl)
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());
@@ -37,7 +44,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "__Host-BattleTownship.Auth";
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // in development : use SameAsRequest for local
+    options.Cookie.SecurePolicy = appConfig.Security.CookieSecurePolicy;
     options.Cookie.SameSite = SameSiteMode.Strict;
     options.Cookie.Path = "/";
 
@@ -61,7 +69,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.UseCors("Local");
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 
