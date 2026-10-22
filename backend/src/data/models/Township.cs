@@ -5,7 +5,7 @@ namespace Clementbq.BattleTownship.Data.Models;
 
 public class Township
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public required string Name { get; set; }
 

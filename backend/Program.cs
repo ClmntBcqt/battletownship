@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services
-    .AddIdentity<User, IdentityRole>(options =>
+    .AddIdentity<User, IdentityRole<Guid>>(options =>
         {
             options.User.RequireUniqueEmail = true;
 
