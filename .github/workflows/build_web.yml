@@ -1,0 +1,25 @@
+name: Flutter Web frontend build
+
+on: workflow_dispatch
+
+jobs:
+    build:
+        runs-on: ubuntu-24.04
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: subosito/flutter-action@v2
+              with:
+                  channel: stable
+                  flutter-version-file: frontend/pubspec.yaml
+
+            - run: flutter pub get
+              working-directory: frontend/
+
+            - run: flutter build web --dart-define-from-file=config.json
+              working-directory: frontend/
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: battletownship-web-${{github.ref_name}}
+                  path: frontend/build/web
