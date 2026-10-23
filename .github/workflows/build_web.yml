@@ -22,7 +22,15 @@ jobs:
             - run: flutter build web --release --dart-define-from-file=config.json
               working-directory: frontend/
 
+            - run: flutter build apk --release --dart-define-from-file=config.json
+              working-directory: frontend/
+
             - uses: actions/upload-artifact@v4
               with:
                   name: battletownship-web-${{github.ref_name}}
                   path: frontend/build/web
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: battletownship-apk-${{github.ref_name}}
+                  path: frontend/build/app/outputs/flutter-apk/app-release.apk
