@@ -16,17 +16,18 @@ jobs:
           dotnet tool install --global dotnet-ef
           echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
 
-      - run: dotnet publish -c Release -p:PublishSingleFile=true
-        working-directory: backend/
-
-      - run: mkdir -p artifact
-
-      - run: dotnet ef migrations bundle --self-contained -o ../artifact/applyMigrations
-        working-directory: backend/
-
       - run: |
-          cp backend/bin/Release/net10.0/linux-x64/publish/backend artifact/
-          cp backend/battletownship.service artifact/
+          mkdir -p artifact
+          mkdir -p artifact/bin
+          mkdir -p artifact/publish
+
+      - run: dotnet publish -c Release -p:PublishSingleFile=true -o ../artifact/publish
+        working-directory: backend/
+
+      - run: dotnet ef migrations bundle --self-contained -o ../artifact/bin/applyMigrations
+        working-directory: backend/
+
+      - run: cp backend/deploy.sh artifact/
 
       - uses: actions/upload-artifact@v4
         with:
