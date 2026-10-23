@@ -16,6 +16,9 @@ jobs:
             - run: flutter pub get
               working-directory: frontend/
 
+            - run: dart run build_runner build
+              working-directory: frontend/
+
             - run: flutter build web --dart-define-from-file=config.json
               working-directory: frontend/
 
