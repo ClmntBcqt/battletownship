@@ -12,11 +12,19 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - run: |
+          dotnet tool install --global dotnet-ef
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
       - run: dotnet publish -c Release -p:PublishSingleFile=true
         working-directory: backend/
 
+      - run: mkdir -p artifact
+
+      - run: dotnet ef migrations bundle --self-contained -o ../artifact/applyMigrations
+        working-directory: backend/
+
       - run: |
-          mkdir -p artifact
           cp backend/bin/Release/net10.0/linux-x64/publish/backend artifact/
           cp backend/battletownship.service artifact/
 
