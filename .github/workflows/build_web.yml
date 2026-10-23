@@ -19,7 +19,7 @@ jobs:
             - run: dart run build_runner build
               working-directory: frontend/
 
-            - run: flutter build web --dart-define-from-file=config.json
+            - run: flutter build web --release --dart-define-from-file=config.json
               working-directory: frontend/
 
             - uses: actions/upload-artifact@v4
