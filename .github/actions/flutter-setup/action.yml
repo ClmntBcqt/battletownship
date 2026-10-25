@@ -1,0 +1,18 @@
+name: Flutter setup
+description: Install flutter, install dependencies, generate code
+
+runs:
+  using: composite
+  steps:
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        flutter-version-file: frontend/pubspec.yaml
+
+    - run: flutter pub get
+      working-directory: frontend/
+      shell: bash
+
+    - run: dart run build_runner build
+      working-directory: frontend/
+      shell: bash

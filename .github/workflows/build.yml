@@ -1,0 +1,69 @@
+name: BattleTownship build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: |
+          dotnet tool install --global dotnet-ef
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - run: |
+          mkdir -p artifact
+          mkdir -p artifact/bin
+          mkdir -p artifact/publish
+
+      - run: dotnet publish -c Release -p:PublishSingleFile=true -o ../artifact/publish
+        working-directory: backend/
+
+      - run: dotnet ef migrations bundle --self-contained -o ../artifact/bin/applyMigrations
+        working-directory: backend/
+
+      - run: cp backend/deploy.sh artifact/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: battletownship-backend-${{github.ref_name}}
+          path: artifact/
+
+  build-web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/flutter-setup
+
+      - run: flutter build web --release --dart-define-from-file=config.json
+        working-directory: frontend/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: battletownship-web-${{github.ref_name}}
+          path: frontend/build/web
+
+  build-apk:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/flutter-setup
+
+      - run: flutter build apk --release --dart-define-from-file=config.json
+        working-directory: frontend/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: battletownship-apk-${{github.ref_name}}
+          path: frontend/build/app/outputs/flutter-apk/app-release.apk
