@@ -19,4 +19,7 @@ public class SecurityConfiguration
 {
     [Required]
     public required CookieSecurePolicy CookieSecurePolicy { get; set; }
+
+    [Required]
+    public required String AuthCookieName { get; set; }
 }

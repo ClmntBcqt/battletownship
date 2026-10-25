@@ -42,7 +42,8 @@ builder.Services
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.Name = "__Host-BattleTownship.Auth";
+    // in development : remove __Host prefix to work with HTTP
+    options.Cookie.Name = appConfig.Security.AuthCookieName;
     options.Cookie.HttpOnly = true;
     // in development : use SameAsRequest for local
     options.Cookie.SecurePolicy = appConfig.Security.CookieSecurePolicy;
