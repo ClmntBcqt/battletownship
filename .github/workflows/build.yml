@@ -67,3 +67,51 @@ jobs:
         with:
           name: battletownship-apk-${{github.ref_name}}
           path: frontend/build/app/outputs/flutter-apk/app-release.apk
+
+  publish-release:
+    runs-on: ubuntu-24.04
+    needs:
+      - build-backend
+      - build-web
+      - build-apk
+
+    if: github.ref_type == 'tag'
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: battletownship-backend-${{ github.ref_name }}
+          path: dist/backend/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: battletownship-web-${{ github.ref_name }}
+          path: dist/web/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: battletownship-apk-${{ github.ref_name }}
+          path: dist/apk/
+
+      - env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist/release
+
+          tar -czf "dist/release/battletownship-backend-${TAG}.tar.gz" -C dist/backend .
+
+          tar -czf "dist/release/battletownship-web-${TAG}.tar.gz" -C dist/web .
+
+          cp dist/apk/app-release.apk "dist/release/battletownship-${TAG}.apk"
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: BattleTownship ${{ github.ref_name }}
+          files: |
+            dist/release/battletownship-backend-${{ github.ref_name }}.tar.gz
+            dist/release/battletownship-web-${{ github.ref_name }}.tar.gz
+            dist/release/battletownship-${{ github.ref_name }}.apk
