@@ -60,6 +60,7 @@ class _AuthFormState extends State<AuthForm> {
                 autovalidateMode: .onUnfocus,
                 forceErrorText: _emailError,
                 onChanged: (_) => resetEmailError(),
+                errorBuilder: errorBuilder,
               ),
               if (_isRegisterMode)
                 TextFormField(
@@ -72,6 +73,7 @@ class _AuthFormState extends State<AuthForm> {
                   autovalidateMode: .onUnfocus,
                   forceErrorText: _usernameError,
                   onChanged: (_) => resetUsernameError(),
+                  errorBuilder: errorBuilder,
                 ),
               TextFormField(
                 controller: _passwordController,
@@ -90,6 +92,7 @@ class _AuthFormState extends State<AuthForm> {
                 obscureText: _hidePassword,
                 validator: Validators.validatePassword,
                 autovalidateMode: .onUnfocus,
+                errorBuilder: errorBuilder,
               ),
 
               if (_generalError.isNotEmpty)
@@ -139,6 +142,9 @@ class _AuthFormState extends State<AuthForm> {
       ],
     );
   }
+
+  Widget errorBuilder(BuildContext context, String errorText) =>
+      Flexible(child: Text(errorText));
 
   Future<void> sendRegister() async {
     final authService = context.read<AuthService>();
