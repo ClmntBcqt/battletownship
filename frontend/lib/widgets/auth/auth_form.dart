@@ -144,7 +144,7 @@ class _AuthFormState extends State<AuthForm> {
   }
 
   Widget errorBuilder(BuildContext context, String errorText) =>
-      Flexible(child: Text(errorText));
+      Text(errorText, softWrap: true);
 
   Future<void> sendRegister() async {
     final authService = context.read<AuthService>();
