@@ -17,13 +17,9 @@ class _FabState extends State<Fab> {
   @override
   Widget build(BuildContext context) {
     var townshipService = context.read<TownshipService>();
-    return SizedBox(
-      width: 72,
-      height: 72,
-      child: FloatingActionButton(
-        onPressed: () => showAddTownshipPopup(context, townshipService),
-        child: Icon(Icons.add, size: 40),
-      ),
+    return FloatingActionButton.large(
+      onPressed: () => showAddTownshipPopup(context, townshipService),
+      child: Icon(Icons.add),
     );
   }
 

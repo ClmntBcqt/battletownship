@@ -91,16 +91,15 @@ class _CameraState extends State<Camera> {
             if (_isCameraReady)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: .bottomCenter,
-                  child: SizedBox.square(
-                    dimension: 64,
+                child: Transform.scale(
+                  scale: 1.3,
+                  child: Align(
+                    alignment: .bottomCenter,
                     child: IconButton.filled(
                       onPressed: _cameraController.value.isPreviewPaused
                           ? resetPreview
                           : takePicture,
                       icon: Icon(
-                        size: 40,
                         _cameraController.value.isPreviewPaused
                             ? Icons.flip_camera_ios_outlined
                             : Icons.camera_alt_outlined,
