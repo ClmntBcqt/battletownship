@@ -38,15 +38,7 @@ class _CameraState extends State<Camera> {
   void initState() {
     super.initState();
 
-    availableCameras().then((cameras) {
-      setState(() {
-        _availableCameras.addAll(cameras);
-      });
-
-      setState(() {
-        _selectedCameraIndex = 0;
-      });
-
+    getAvailableCameras().then((_) {
       if (_availableCameras.isEmpty) return;
 
       _initializeCamera(_selectedCamera);
@@ -157,6 +149,27 @@ class _CameraState extends State<Camera> {
 
     setState(() {
       _isCameraReady = true;
+    });
+  }
+
+  Future<void> getAvailableCameras() async {
+    List<CameraDescription> cameras = [];
+    try {
+      cameras = await availableCameras();
+    } on CameraException catch (e) {
+      if (e.code == 'CameraAccessDenied') {
+        setState(() {
+          _isAccessDenied = true;
+        });
+      }
+    }
+
+    setState(() {
+      _availableCameras.addAll(cameras);
+    });
+
+    setState(() {
+      _selectedCameraIndex = 0;
     });
   }
 
