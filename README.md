@@ -4,4 +4,4 @@ BattleTownship is an online game where players collect French communes by scanni
 
 ## How to play
 
-You can play online on the [website](battletownship.clementbq.com) or download the mobile app from the [Release page](https://github.com/ClmntBcqt/battletownship/releases/latest).
+You can play online on the [website](https://battletownship.clementbq.com) or download the mobile app from the [Release page](https://github.com/ClmntBcqt/battletownship/releases/latest).
