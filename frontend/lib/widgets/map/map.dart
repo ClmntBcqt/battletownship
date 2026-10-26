@@ -5,6 +5,7 @@ import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
 import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/township_service.dart';
 import 'package:frontend/widgets/map/map_toolbox.dart';
+import 'package:frontend/widgets/shared/eb10_sign.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -107,18 +108,7 @@ class TownshipTile extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: Align(
           alignment: .center,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.red, width: 8),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 40),
-            child: Text(
-              _township.name.toUpperCase(),
-              textAlign: .center,
-              style: TextStyle(fontWeight: .w600),
-            ),
-          ),
+          child: EB10Sign(text: _township.name),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,

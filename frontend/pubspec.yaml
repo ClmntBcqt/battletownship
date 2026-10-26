@@ -101,3 +101,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: L1
+      fonts:
+        - asset: fonts/L1.ttf
+    - family: L2
+      fonts:
+        - asset: fonts/L2.ttf
+    - family: L4
+      fonts:
+        - asset: fonts/L4.ttf
