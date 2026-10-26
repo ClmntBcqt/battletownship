@@ -4,7 +4,7 @@ import 'package:flutter_map_geojson2/geojson2/default_features.dart';
 import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
 import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/services/township_service.dart';
-import 'package:frontend/widgets/map_toolbox.dart';
+import 'package:frontend/widgets/map/map_toolbox.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';

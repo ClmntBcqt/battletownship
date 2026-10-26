@@ -2,16 +2,16 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Scanner extends StatefulWidget {
+class Camera extends StatefulWidget {
   const new({super.key, required this.onPictureContent});
 
   final ValueChanged<Uint8List?> onPictureContent;
 
   @override
-  State<Scanner> createState() => _ScannerState();
+  State<Camera> createState() => _CameraState();
 }
 
-class _ScannerState extends State<Scanner> {
+class _CameraState extends State<Camera> {
   late CameraController _cameraController;
   bool _isCameraReady = false;
   bool _isAccessDenied = false;
