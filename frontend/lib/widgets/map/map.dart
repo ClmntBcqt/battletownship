@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_geojson2/geojson2/default_features.dart';
 import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
-import 'package:frontend/dtos/scan.dart';
-import 'package:frontend/services/township_service.dart';
+import 'package:frontend/dtos/township.dart';
+import 'package:frontend/services/api_service.dart';
 import 'package:frontend/widgets/map/map_toolbox.dart';
 import 'package:frontend/widgets/shared/eb10_sign.dart';
 import 'package:intl/intl.dart';
@@ -25,12 +25,12 @@ class _MapWidgetState extends State<MapWidget> {
   void initState() {
     super.initState();
 
-    context.read<TownshipService>().fetchTownships();
+    context.read<ApiService>().fetchTownships();
   }
 
   @override
   Widget build(BuildContext context) {
-    var townships = context.watch<TownshipService>().townships;
+    var townships = context.watch<ApiService>().townships;
     return FlutterMap(
       options: MapOptions(
         initialCenter: grenobleCoordinates,
@@ -55,7 +55,7 @@ class _MapWidgetState extends State<MapWidget> {
 }
 
 class TownshipTile extends StatelessWidget {
-  final ScanDto _township;
+  final TownshipDto _township;
   const new({super.key, required this._township});
 
   static const _townshipPalette = [
@@ -102,7 +102,7 @@ class TownshipTile extends StatelessWidget {
   }
 
   Future<void> showTownshipInfos(BuildContext context) {
-    final townshipService = context.read<TownshipService>();
+    final townshipService = context.read<ApiService>();
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -155,10 +155,7 @@ class TownshipTile extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmReport(
-    BuildContext context,
-    TownshipService service,
-  ) async {
+  Future<void> _confirmReport(BuildContext context, ApiService service) async {
     final confirmed = await _showReportConfirmationPopup(context);
 
     if (!context.mounted) return;

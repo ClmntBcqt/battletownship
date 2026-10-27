@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/services/township_service.dart';
+import 'package:frontend/services/api_service.dart';
 import 'package:frontend/widgets/scanner/scanner_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +16,7 @@ class _FabState extends State<Fab> {
 
   @override
   Widget build(BuildContext context) {
-    var townshipService = context.read<TownshipService>();
+    var townshipService = context.read<ApiService>();
     return FloatingActionButton.large(
       onPressed: () => showAddTownshipPopup(context, townshipService),
       child: Icon(Icons.add),
@@ -25,7 +25,7 @@ class _FabState extends State<Fab> {
 
   Future<void> showAddTownshipPopup(
     BuildContext context,
-    TownshipService townshipService,
+    ApiService townshipService,
   ) {
     return showDialog<String>(
       context: context,

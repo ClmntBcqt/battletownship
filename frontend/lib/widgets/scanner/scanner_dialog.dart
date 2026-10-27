@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/township_service.dart';
+import 'package:frontend/services/api_service.dart';
 import 'package:frontend/widgets/scanner/camera.dart';
 
 class ScannerDialog extends StatefulWidget {
   const new({super.key, required this.townshipService});
 
-  final TownshipService townshipService;
+  final ApiService townshipService;
 
   @override
   State<ScannerDialog> createState() => _ScannerDialogState();
@@ -77,7 +77,7 @@ class _ScannerDialogState extends State<ScannerDialog> {
         _loading = true;
       });
 
-      await widget.townshipService.addTownship(townshipName, _pictureBytes!);
+      await widget.townshipService.addScan(townshipName, _pictureBytes!);
 
       if (!mounted) return;
 

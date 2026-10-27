@@ -10,11 +10,7 @@ namespace Clementbq.BattleTownship.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class MapController(
-    ApplicationDbContext dbContext,
-    UserManager<User> userManager,
-GeoDataService geoDataService
-) : ControllerBase
+public class MapController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
     [Authorize]
@@ -36,44 +32,5 @@ GeoDataService geoDataService
             s.Picture,
             s.CreatedAt
         }));
-    }
-
-    public record CreateScanRequest(string TownshipName, byte[] Picture);
-
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> AddTownShip([FromBody]
-    CreateScanRequest request)
-    {
-        var user = await userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
-
-        var geojson = geoDataService.FindFromOsm(request.TownshipName);
-
-        var name = geojson.GetProperty("properties").GetProperty("name").GetString()!;
-
-        var existingTownship = dbContext.Townships.FirstOrDefault(t => t.Name == name);
-
-        if (existingTownship == null)
-        {
-            existingTownship = new Township
-            {
-                Name = name,
-                Geojson = geojson
-            };
-            dbContext.Townships.Add(existingTownship);
-        }
-
-        var newScan = new Scan
-        {
-            Township = existingTownship,
-            User = user,
-            Picture = request.Picture,
-        };
-        dbContext.Scans.Add(newScan);
-
-        dbContext.SaveChanges();
-
-        return Created();
     }
 }

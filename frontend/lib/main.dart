@@ -3,7 +3,7 @@ import 'package:frontend/config/config.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
-import 'package:frontend/services/township_service.dart';
+import 'package:frontend/services/api_service.dart';
 import 'package:frontend/widgets/app_loader.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,7 @@ void main() async {
   final apiClient = ApiClient(httpClient);
 
   final authService = AuthService(apiClient);
-  final townshipService = TownshipService(apiClient);
+  final townshipService = ApiService(apiClient);
 
   await initializeDateFormatting("fr_FR", null);
 
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   });
 
   final AuthService _authService;
-  final TownshipService _townshipService;
+  final ApiService _townshipService;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
