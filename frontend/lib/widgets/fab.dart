@@ -16,20 +16,20 @@ class _FabState extends State<Fab> {
 
   @override
   Widget build(BuildContext context) {
-    var townshipService = context.read<ApiService>();
+    var apiService = context.read<ApiService>();
     return FloatingActionButton.large(
-      onPressed: () => showAddTownshipPopup(context, townshipService),
+      onPressed: () => showAddTownshipPopup(context, apiService),
       child: Icon(Icons.add),
     );
   }
 
   Future<void> showAddTownshipPopup(
     BuildContext context,
-    ApiService townshipService,
+    ApiService apiService,
   ) {
     return showDialog<String>(
       context: context,
-      builder: (context) => ScannerDialog(townshipService: townshipService),
+      builder: (context) => ScannerDialog(apiService: apiService),
     );
   }
 }

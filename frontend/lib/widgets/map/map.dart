@@ -102,7 +102,7 @@ class TownshipTile extends StatelessWidget {
   }
 
   Future<void> showTownshipInfos(BuildContext context) {
-    final townshipService = context.read<ApiService>();
+    final apiService = context.read<ApiService>();
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -138,8 +138,7 @@ class TownshipTile extends StatelessWidget {
         ),
         actions: [
           ElevatedButton(
-            onPressed: () async =>
-                await _confirmReport(context, townshipService),
+            onPressed: () async => await _confirmReport(context, apiService),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.errorContainer,
               foregroundColor: Theme.of(context).colorScheme.error,
