@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/config/config.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
 import 'package:frontend/services/api_service.dart';
-import 'package:frontend/widgets/app_loader.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -38,15 +38,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: _authService),
-          ChangeNotifierProvider.value(value: _townshipService),
-        ],
-        child: AppLoader(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: _authService),
+        ChangeNotifierProvider.value(value: _townshipService),
+      ],
+      child: MaterialApp.router(
+        title: 'Flutter Demo',
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        routerConfig: goRouter,
       ),
     );
   }

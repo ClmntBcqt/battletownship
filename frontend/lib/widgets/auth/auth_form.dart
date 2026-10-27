@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/utils/validators.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AuthForm extends StatefulWidget {
@@ -161,8 +162,6 @@ class _AuthFormState extends State<AuthForm> {
 
     try {
       await authService.register(email, username, password);
-
-      clearAllFields();
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final isEmailConflictError =
@@ -189,6 +188,11 @@ class _AuthFormState extends State<AuthForm> {
       } else {
         rethrow;
       }
+
+      clearAllFields();
+
+      if (!mounted) return;
+      context.go("/map");
     }
   }
 
@@ -205,8 +209,6 @@ class _AuthFormState extends State<AuthForm> {
 
     try {
       await authService.login(email, password);
-
-      clearAllFields();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         setState(() {
@@ -216,6 +218,11 @@ class _AuthFormState extends State<AuthForm> {
         rethrow;
       }
     }
+
+    clearAllFields();
+
+    if (!mounted) return;
+    context.go("/map");
   }
 
   void switchMode() {

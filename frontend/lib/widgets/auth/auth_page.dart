@@ -1,8 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/auth/auth_form.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class AuthPage extends StatelessWidget {
+class AuthPage extends StatefulWidget {
   const new({super.key});
+
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
+  bool _isPageLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final authService = context.read<AuthService>();
+
+    authService.isAuthenticated.then((isAuthenticated) {
+      if (!mounted) return;
+      if (isAuthenticated) context.go("/map");
+
+      setState(() {
+        _isPageLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +38,15 @@ class AuthPage extends StatelessWidget {
           color: Theme.of(context).colorScheme.surfaceContainerLowest,
         ),
         padding: EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: .spaceAround,
-          children: [
-            Expanded(flex: 10, child: AppTitle()),
-            Expanded(flex: 15, child: AuthForm()),
-          ],
-        ),
+        child: _isPageLoading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+                mainAxisAlignment: .spaceAround,
+                children: [
+                  Expanded(flex: 10, child: AppTitle()),
+                  Expanded(flex: 15, child: AuthForm()),
+                ],
+              ),
       ),
     );
   }
