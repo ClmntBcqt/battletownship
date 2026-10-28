@@ -33,8 +33,6 @@ class EB10Sign extends StatelessWidget {
   RichText format(TextStyle textStyle) {
     var parts = text.toUpperCase().split(" ").map((e) => e.split("-").toList());
 
-    print(parts);
-
     var spans =
         parts
             .map(
