@@ -7,9 +7,9 @@ import 'package:frontend/widgets/scanner/camera.dart';
 import 'package:provider/provider.dart';
 
 class ScannerDialog extends StatefulWidget {
-  const new({super.key, required this.apiService});
+  const new({super.key, required this.mapService});
 
-  final ApiService apiService;
+  final MapService mapService;
 
   @override
   State<ScannerDialog> createState() => _ScannerDialogState();
@@ -71,7 +71,7 @@ class _ScannerDialogState extends State<ScannerDialog> {
   Future<void> sendScan() async {
     if (!_isFormValid) return;
 
-    var apiService = context.read<ApiService>();
+    var mapService = context.read<MapService>();
     final townshipName = _textController.text.trim();
 
     try {
@@ -79,7 +79,7 @@ class _ScannerDialogState extends State<ScannerDialog> {
         _loading = true;
       });
 
-      await apiService.addScan(townshipName, _pictureBytes!);
+      await mapService.addScan(townshipName, _pictureBytes!);
 
       if (!mounted) return;
 

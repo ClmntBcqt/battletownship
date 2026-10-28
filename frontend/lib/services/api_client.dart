@@ -3,6 +3,7 @@ import 'package:frontend/config/config.dart';
 import 'package:frontend/dtos/create_scan_request.dart';
 import 'package:frontend/dtos/login_request.dart';
 import 'package:frontend/dtos/register_request.dart';
+import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/dtos/township.dart';
 import 'package:frontend/dtos/user_infos.dart';
 import 'package:frontend/services/http_client.dart';
@@ -45,4 +46,12 @@ class ApiClient {
 
   Future<void> reportScan(String scanId) async =>
       await httpClient.post("/report/$scanId", null);
+
+  Future<List<ScanDto>> getMyScans() async {
+    var response = await httpClient.get("/scans/me");
+
+    return (response.data as List)
+        .map((json) => ScanDto.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }

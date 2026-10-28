@@ -5,10 +5,10 @@ import 'package:frontend/dtos/create_scan_request.dart';
 import 'package:frontend/dtos/township.dart';
 import 'package:frontend/services/api_client.dart';
 
-class ApiService extends ChangeNotifier {
+class MapService extends ChangeNotifier {
   final ApiClient _apiClient;
 
-  ApiService(this._apiClient);
+  MapService(this._apiClient);
 
   List<TownshipDto> _townships = [];
   List<TownshipDto> get townships => _townships;

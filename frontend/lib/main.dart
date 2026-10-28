@@ -5,7 +5,7 @@ import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
 import 'package:frontend/services/api_service.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:frontend/services/scans_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -19,29 +19,37 @@ void main() async {
   final apiClient = ApiClient(httpClient);
 
   final authService = AuthService(apiClient);
-  final apiService = ApiService(apiClient);
+  final mapService = MapService(apiClient);
+  final scanService = ScanService(apiClient);
 
-  await initializeDateFormatting("fr_FR", null);
-
-  runApp(MyApp(authService: authService, apiService: apiService));
+  runApp(
+    MyApp(
+      authService: authService,
+      mapService: mapService,
+      scanService: scanService,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this._authService,
-    required this._apiService,
+    required this._mapService,
+    required this._scanService,
   });
 
   final AuthService _authService;
-  final ApiService _apiService;
+  final MapService _mapService;
+  final ScanService _scanService;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authService),
-        ChangeNotifierProvider.value(value: _apiService),
+        ChangeNotifierProvider.value(value: _mapService),
+        ChangeNotifierProvider.value(value: _scanService),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',

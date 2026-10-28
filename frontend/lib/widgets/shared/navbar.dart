@@ -15,7 +15,7 @@ class Navbar extends StatelessWidget {
     return NavigationBar(
       destinations: [
         NavigationDestination(icon: Icon(Icons.map_outlined), label: "Carte"),
-        NavigationDestination(icon: Icon(Icons.list), label: "Mes scans"),
+        NavigationDestination(icon: Icon(Icons.list), label: "Scans"),
       ],
       selectedIndex: navIndex,
       onDestinationSelected: onDestinationSelected,

@@ -6,7 +6,7 @@ import 'package:frontend/dtos/township.dart';
 import 'package:frontend/services/api_service.dart';
 import 'package:frontend/widgets/map/map_toolbox.dart';
 import 'package:frontend/widgets/shared/eb10_sign.dart';
-import 'package:intl/intl.dart';
+import 'package:intl4x/datetime_format.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
@@ -25,12 +25,12 @@ class _MapWidgetState extends State<MapWidget> {
   void initState() {
     super.initState();
 
-    context.read<ApiService>().fetchTownships();
+    context.read<MapService>().fetchTownships();
   }
 
   @override
   Widget build(BuildContext context) {
-    var townships = context.watch<ApiService>().townships;
+    var townships = context.watch<MapService>().townships;
     return FlutterMap(
       options: MapOptions(
         initialCenter: grenobleCoordinates,
@@ -81,9 +81,10 @@ class TownshipTile extends StatelessWidget {
     ],
   );
   TextSpan get _formatScanDate => TextSpan(
-    text: DateFormat(
-      "le d MMMM yyyy à HH:mm:ss",
-      "fr_FR",
+    text: DateTimeFormat.yearMonthDayTime(
+      locale: .parse("fr-FR"),
+      timePrecision: .second,
+      length: .medium,
     ).format(_township.createdAt),
   );
 
@@ -102,7 +103,7 @@ class TownshipTile extends StatelessWidget {
   }
 
   Future<void> showTownshipInfos(BuildContext context) {
-    final apiService = context.read<ApiService>();
+    final mapService = context.read<MapService>();
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -138,7 +139,7 @@ class TownshipTile extends StatelessWidget {
         ),
         actions: [
           ElevatedButton(
-            onPressed: () async => await _confirmReport(context, apiService),
+            onPressed: () async => await _confirmReport(context, mapService),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.errorContainer,
               foregroundColor: Theme.of(context).colorScheme.error,
@@ -154,7 +155,7 @@ class TownshipTile extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmReport(BuildContext context, ApiService service) async {
+  Future<void> _confirmReport(BuildContext context, MapService service) async {
     final confirmed = await _showReportConfirmationPopup(context);
 
     if (!context.mounted) return;
