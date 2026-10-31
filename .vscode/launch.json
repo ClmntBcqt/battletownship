@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter Web",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceFolder}/frontend/lib/main.dart",
+            "cwd": "${workspaceFolder}/frontend",
+            "flutterMode": "debug",
+            "args": [
+                "-d",
+                "web-server",
+                "--web-port",
+                "3000",
+                "--dart-define-from-file",
+                "config.dev.json"
+            ]
+        }
+    ]
+}

@@ -54,4 +54,8 @@ class ApiClient {
         .map((json) => ScanDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }
+
+  Future<void> deleteScans(List<String> scanIds) async {
+    await httpClient.delete("/scans", scanIds);
+  }
 }

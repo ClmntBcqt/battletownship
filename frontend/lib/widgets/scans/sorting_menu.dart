@@ -12,22 +12,29 @@ class SortingMenu extends StatefulWidget {
 class _SortingMenuState extends State<SortingMenu> {
   @override
   Widget build(BuildContext context) {
+    final scanService = context.watch<ScanService>();
     return MenuAnchor(
       animated: true,
       menuChildren: ScanSortingOptions.values
           .map(
             (sortOption) => MenuItemButton(
-              onPressed: () => context.read<ScanService>().setSort(sortOption),
-              child: Text("Par ${sortOption.label.toLowerCase()}"),
+              onPressed: () =>
+                  context.read<ScanService>().toogleSort(sortOption),
+              leadingIcon: Icon(
+                sortOption == scanService.currentSort
+                    ? scanService.isSortReversed
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward
+                    : null,
+              ),
+              child: Text(sortOption.label),
             ),
           )
           .toList(),
-      builder: (_, controller, _) => ElevatedButton.icon(
+      builder: (_, controller, _) => IconButton.filledTonal(
         onPressed: () =>
             controller.isOpen ? controller.close() : controller.open(),
-        style: ElevatedButton.styleFrom(elevation: 1),
         icon: Icon(Icons.sort),
-        label: Text(context.watch<ScanService>().currentSort.label),
       ),
     );
   }

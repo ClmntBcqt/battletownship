@@ -17,10 +17,7 @@ class FilterBar extends StatelessWidget {
       padding: const WidgetStatePropertyAll<EdgeInsets>(
         EdgeInsets.symmetric(horizontal: 16),
       ),
-      elevation: const WidgetStatePropertyAll<double>(1),
-      backgroundColor: WidgetStatePropertyAll<Color>(
-        Theme.of(context).colorScheme.surfaceContainerLow,
-      ),
+      elevation: const WidgetStatePropertyAll<double>(0),
       onChanged: (filter) => context.read<ScanService>().setFilter(filter),
     );
   }

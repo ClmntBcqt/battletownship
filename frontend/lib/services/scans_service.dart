@@ -14,6 +14,8 @@ class ScanService extends ChangeNotifier {
       ? _myScanSortedFiltered.reversed.toList()
       : _myScanSortedFiltered;
 
+  final Set<ScanDto> _selectedScans = {};
+
   bool _isSortReversed = false;
   bool get isSortReversed => _isSortReversed;
 
@@ -28,8 +30,20 @@ class ScanService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSort(ScanSortingOptions sortOption) {
-    _currentSort = sortOption;
+  Future<void> deleteSelection() async {
+    await _apiClient.deleteScans(_selectedScans.map((s) => s.id).toList());
+
+    await fetchMyScans();
+    _selectedScans.clear();
+  }
+
+  void toogleSort(ScanSortingOptions sortOption) {
+    if (sortOption == _currentSort) {
+      _isSortReversed = !_isSortReversed;
+    } else {
+      _currentSort = sortOption;
+      _isSortReversed = false;
+    }
 
     notifyListeners();
   }
@@ -42,6 +56,39 @@ class ScanService extends ChangeNotifier {
 
   void reverseSort() {
     _isSortReversed = !_isSortReversed;
+
+    notifyListeners();
+  }
+
+  bool isSelected(ScanDto scan) {
+    return _selectedScans.contains(scan);
+  }
+
+  bool get isSelectionEmpty => _selectedScans.isEmpty;
+
+  int get selectionCount => _selectedScans.length;
+
+  void toggleSelect(ScanDto scan) {
+    if (isSelected(scan)) {
+      _selectedScans.remove(scan);
+    } else {
+      _selectedScans.add(scan);
+    }
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    _selectedScans.clear();
+
+    notifyListeners();
+  }
+
+  void toogleAllSelection() {
+    if (selectionCount == _myScans.length) {
+      clearSelection();
+    } else {
+      _selectedScans.addAll(_myScans);
+    }
 
     notifyListeners();
   }
@@ -64,10 +111,10 @@ class ScanService extends ChangeNotifier {
 }
 
 enum ScanSortingOptions {
-  byDate("Date", _sortBydate),
-  byTownship("Commune", _sortByTownship),
-  byReport("Signalement", _sortByReport),
-  byOwning("Possession", _sortByOwning);
+  byDate("Par date", _sortBydate),
+  byTownship("Par commune", _sortByTownship),
+  byReport("Par signalement", _sortByReport),
+  byOwning("Par Possession", _sortByOwning);
 
   const ScanSortingOptions(this.label, this.sort);
   final String label;

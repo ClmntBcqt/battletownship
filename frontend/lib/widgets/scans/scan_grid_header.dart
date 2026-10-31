@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/scans/filter_bar.dart';
-import 'package:frontend/widgets/scans/reverse_sort_button.dart';
 import 'package:frontend/widgets/scans/sorting_menu.dart';
 
-class HeaderCard extends StatelessWidget {
+class ScanGridHeader extends StatelessWidget {
   const new({super.key});
 
   @override
@@ -13,7 +12,7 @@ class HeaderCard extends StatelessWidget {
       children: [
         Expanded(child: FilterBar()),
 
-        Row(children: [SortingMenu(), ReverseSortButton()]),
+        SortingMenu(),
       ],
     );
   }

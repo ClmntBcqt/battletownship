@@ -7,6 +7,11 @@ class MapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [MapWidget(), HelpButton()]);
+    return Stack(
+      children: [
+        MapWidget(),
+        SafeArea(child: HelpButton()),
+      ],
+    );
   }
 }

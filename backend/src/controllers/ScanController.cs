@@ -4,6 +4,7 @@ using Clementbq.BattleTownship.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clementbq.BattleTownship.Controllers;
 
@@ -76,18 +77,20 @@ public class ScansController(
     }
 
     [Authorize]
-    [HttpDelete("{ScanId}")]
-    public async Task<IActionResult> DeleteScan(Guid scanId)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteScan(List<Guid> scanIds)
     {
         var user = await userManager.GetUserAsync(User);
-        var scan = await dbContext.Scans.FindAsync(scanId);
+        var scans = await dbContext.Scans
+            .Where(s => scanIds.Contains(s.Id))
+            .ToListAsync();
 
-        if (scan == null || scan.User != user)
+        if (scans.Count != scanIds.Distinct().Count() || scans.Any(s => s.User != user))
         {
             return NotFound();
         }
 
-        dbContext.Scans.Remove(scan);
+        dbContext.Scans.RemoveRange(scans);
 
         await dbContext.SaveChangesAsync();
 
