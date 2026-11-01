@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/api_service.dart';
+import 'package:frontend/dtos/township_suggestion.dart';
+import 'package:frontend/services/map_service.dart';
 import 'package:frontend/widgets/scanner/camera.dart';
+import 'package:frontend/widgets/scanner/township_field.dart';
 import 'package:provider/provider.dart';
 
 class ScannerDialog extends StatefulWidget {
@@ -17,14 +18,13 @@ class ScannerDialog extends StatefulWidget {
 
 class _ScannerDialogState extends State<ScannerDialog> {
   bool _loading = false;
-  String? _error;
 
-  final _textController = TextEditingController();
+  TownshipSuggestionDto? _township;
   Uint8List? _pictureBytes;
 
-  bool get _isNameValid => _textController.text.trim().isNotEmpty;
+  bool get _isTownshipValid => _township != null;
   bool get _isPictureValid => _pictureBytes != null;
-  bool get _isFormValid => !_loading && _isNameValid && _isPictureValid;
+  bool get _isFormValid => !_loading && _isTownshipValid && _isPictureValid;
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +37,10 @@ class _ScannerDialogState extends State<ScannerDialog> {
             mainAxisSize: MainAxisSize.min,
             spacing: 16,
             children: [
-              TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  labelText: "Nom",
-                  errorText: _error,
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (_) => setState(() {}),
+              TownshipField(
+                onSelected: (suggestion) => setState(() {
+                  _township = suggestion;
+                }),
               ),
               Camera(
                 onPictureContent: (pictureContent) => setState(() {
@@ -72,26 +68,19 @@ class _ScannerDialogState extends State<ScannerDialog> {
     if (!_isFormValid) return;
 
     var mapService = context.read<MapService>();
-    final townshipName = _textController.text.trim();
 
-    try {
-      setState(() {
-        _loading = true;
-      });
+    setState(() {
+      _loading = true;
+    });
 
-      await mapService.addScan(townshipName, _pictureBytes!);
+    await mapService.addScan(_township!.code, _pictureBytes!);
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      Navigator.of(context).pop();
-    } on DioException catch (e) {
-      setState(() {
-        _error = e.response?.data['detail'];
-      });
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
+    setState(() {
+      _loading = false;
+    });
+
+    Navigator.of(context).pop();
   }
 }

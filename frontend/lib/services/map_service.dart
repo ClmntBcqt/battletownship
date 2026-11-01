@@ -19,9 +19,9 @@ class MapService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addScan(String townshipName, Uint8List picture) async {
+  Future<void> addScan(String inseeCode, Uint8List picture) async {
     await _apiClient.addScan(
-      CreateScanRequest(townshipName: townshipName, picture: picture),
+      CreateScanRequest(inseeCode: inseeCode, picture: picture),
     );
 
     await fetchTownships();

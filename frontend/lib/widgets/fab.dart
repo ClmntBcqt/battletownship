@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/services/api_service.dart';
+import 'package:frontend/services/map_service.dart';
 import 'package:frontend/widgets/scanner/scanner_dialog.dart';
 import 'package:provider/provider.dart';
 

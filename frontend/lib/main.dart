@@ -4,8 +4,9 @@ import 'package:frontend/routes.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/http_client.dart';
-import 'package:frontend/services/api_service.dart';
+import 'package:frontend/services/map_service.dart';
 import 'package:frontend/services/scans_service.dart';
+import 'package:frontend/services/township_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -21,12 +22,14 @@ void main() async {
   final authService = AuthService(apiClient);
   final mapService = MapService(apiClient);
   final scanService = ScanService(apiClient);
+  final townshipService = TownshipService();
 
   runApp(
     MyApp(
       authService: authService,
       mapService: mapService,
       scanService: scanService,
+      townshipService: townshipService,
     ),
   );
 }
@@ -37,11 +40,13 @@ class MyApp extends StatelessWidget {
     required this._authService,
     required this._mapService,
     required this._scanService,
+    required this._townshipService,
   });
 
   final AuthService _authService;
   final MapService _mapService;
   final ScanService _scanService;
+  final TownshipService _townshipService;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -50,6 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: _authService),
         ChangeNotifierProvider.value(value: _mapService),
         ChangeNotifierProvider.value(value: _scanService),
+        Provider.value(value: _townshipService),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',

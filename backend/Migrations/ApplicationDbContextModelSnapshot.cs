@@ -84,11 +84,18 @@ namespace backend.Migrations
                     b.Property<JsonElement>("Geojson")
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("InseeCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InseeCode")
+                        .IsUnique();
 
                     b.ToTable("Townships");
                 });

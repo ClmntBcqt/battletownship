@@ -17,7 +17,7 @@ public class ScansController(
 ) : ControllerBase
 {
 
-    public record CreateScanRequest(string TownshipName, byte[] Picture);
+    public record CreateScanRequest(string InseeCode, byte[] Picture);
 
     [Authorize]
     [HttpPost]
@@ -26,28 +26,26 @@ public class ScansController(
         var user = await userManager.GetUserAsync(User);
         if (user == null) return Unauthorized();
 
-        var geojson = geoDataService.FindFromOsm(request.TownshipName);
-
-        var name = geojson.GetProperty("properties").GetProperty("name").GetString()!;
-
-        var existingTownship = dbContext.Townships.FirstOrDefault(t => t.Name == name);
-
-        if (existingTownship == null)
+        Township township;
+        if (!dbContext.Townships.Any(t => t.InseeCode == request.InseeCode))
         {
-            existingTownship = new Township
-            {
-                Name = name,
-                Geojson = geojson
-            };
-            dbContext.Townships.Add(existingTownship);
+            township = await geoDataService.FindTownshipAsync(request.InseeCode);
         }
+        else
+        {
+            township = dbContext.Townships
+                .Where(t => t.InseeCode == request.InseeCode)
+                .First();
+        }
+
 
         var newScan = new Scan
         {
-            Township = existingTownship,
+            Township = township,
             User = user,
             Picture = request.Picture,
         };
+
         dbContext.Scans.Add(newScan);
 
         dbContext.SaveChanges();

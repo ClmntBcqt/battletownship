@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Clementbq.BattleTownship.Data.Models;
 using Clementbq.BattleTownship.Exceptions;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -7,51 +8,59 @@ namespace Clementbq.BattleTownship.Services;
 public class GeoDataService
 {
     private readonly HttpClient _httpClient;
-    private const string NOMINATIM_URL = "https://nominatim.openstreetmap.org";
+    private const string GEO_API_URL = "https://geo.api.gouv.fr";
 
     public GeoDataService()
     {
         _httpClient = new HttpClient
         {
-            BaseAddress = new Uri(NOMINATIM_URL),
+            BaseAddress = new Uri(GEO_API_URL),
         };
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("com.clementbq.battletownship");
     }
 
-    public JsonElement FindFromOsm(string townshipName)
+    public async Task<Township> FindTownshipAsync(string inseeCode)
     {
-        var candidates = FetchFromNominatim(townshipName)
-            .RootElement
-            .GetProperty("features")
-            .EnumerateArray();
+        try
+        {
+            var response = await FetchFromGeoApiAsync(inseeCode);
 
-        if (!candidates.Any())
-            throw new TownshipNotFoundException(message: "La commune n'a pas pu être trouvée.");
-
-        return candidates.FirstOrDefault(
-            feature =>
-                feature.TryGetProperty("properties", out var properties)
-                && properties.TryGetProperty("extratags", out var extratags)
-                && extratags.TryGetProperty("admin_level", out var adminLevel)
-                && adminLevel.ToString() == "8",
-            candidates.First()
-        );
+            return new Township
+            {
+                InseeCode = inseeCode,
+                Name = response.RootElement
+                            .GetProperty("properties")
+                            .GetProperty("nom")
+                            .GetString()!,
+                Geojson = response.RootElement,
+            };
+        }
+        catch (HttpRequestException e)
+        {
+            if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new TownshipNotFoundException("La commune n'a pas pu être trouvée.");
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
 
-    private JsonDocument FetchFromNominatim(string townshipName)
+
+
+    private async Task<JsonDocument> FetchFromGeoApiAsync(string inseeCode)
     {
-        string url = QueryHelpers.AddQueryString("search",
+        string url = QueryHelpers.AddQueryString("communes/" + inseeCode,
             new Dictionary<string, string?>
             {
-                ["city"] = townshipName,
-                ["country"] = "France",
-                ["extratags"] = "1",
+                ["fields"] = "nom",
                 ["format"] = "geojson",
-                ["polygon_geojson"] = "1",
+                ["geometry"] = "contour",
             });
 
-        var response = _httpClient.GetAsync(url).Result;
-        string result = response.Content.ReadAsStringAsync().Result;
+        var response = await _httpClient.GetAsync(url);
+        string result = await response.Content.ReadAsStringAsync();
 
         return JsonDocument.Parse(result);
     }

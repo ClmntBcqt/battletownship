@@ -3,7 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_geojson2/geojson2/default_features.dart';
 import 'package:flutter_map_geojson2/geojson2/geojson_layer.dart';
 import 'package:frontend/dtos/township.dart';
-import 'package:frontend/services/api_service.dart';
+import 'package:frontend/services/map_service.dart';
 import 'package:frontend/widgets/map/map_toolbox.dart';
 import 'package:frontend/widgets/shared/eb10_sign.dart';
 import 'package:intl4x/datetime_format.dart';
