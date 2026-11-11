@@ -162,6 +162,11 @@ class _AuthFormState extends State<AuthForm> {
 
     try {
       await authService.register(email, username, password);
+
+      clearAllFields();
+
+      if (!mounted) return;
+      context.go("/map");
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final isEmailConflictError =
@@ -182,17 +187,16 @@ class _AuthFormState extends State<AuthForm> {
           });
         }
 
-        setState(() {
-          _generalError = e.response!.data['errors']['other'];
-        });
+        final isOtherError =
+            (e.response!.data['errors']['other'] as List<dynamic>).isNotEmpty;
+        if (isOtherError) {
+          setState(() {
+            _generalError = e.response!.data['errors']['other'];
+          });
+        }
       } else {
         rethrow;
       }
-
-      clearAllFields();
-
-      if (!mounted) return;
-      context.go("/map");
     }
   }
 
@@ -209,6 +213,11 @@ class _AuthFormState extends State<AuthForm> {
 
     try {
       await authService.login(email, password);
+
+      clearAllFields();
+
+      if (!mounted) return;
+      context.go("/map");
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         setState(() {
@@ -218,11 +227,6 @@ class _AuthFormState extends State<AuthForm> {
         rethrow;
       }
     }
-
-    clearAllFields();
-
-    if (!mounted) return;
-    context.go("/map");
   }
 
   void switchMode() {
