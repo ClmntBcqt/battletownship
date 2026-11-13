@@ -48,95 +48,102 @@ class _AuthFormState extends State<AuthForm> {
       children: [
         Expanded(
           flex: 2,
-          child: Column(
-            spacing: 16,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  label: Text("Email"),
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
-                validator: Validators.validateEmail,
-                autovalidateMode: .onUnfocus,
-                forceErrorText: _emailError,
-                onChanged: (_) => resetEmailError(),
-                errorBuilder: errorBuilder,
-              ),
-              if (_isRegisterMode)
+          child: SingleChildScrollView(
+            child: Column(
+              spacing: 16,
+              children: [
                 TextFormField(
-                  controller: _usernameController,
+                  controller: _emailController,
                   decoration: InputDecoration(
-                    label: Text("Nom d'utilisateur"),
-                    prefixIcon: Icon(Icons.person),
+                    label: Text("Email"),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
-                  validator: Validators.validateUsername,
+                  validator: Validators.validateEmail,
                   autovalidateMode: .onUnfocus,
-                  forceErrorText: _usernameError,
-                  onChanged: (_) => resetUsernameError(),
+                  forceErrorText: _emailError,
+                  onChanged: (_) => resetEmailError(),
                   errorBuilder: errorBuilder,
                 ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  label: Text("Mot de passe"),
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    onPressed: () => setState(() {
-                      _hidePassword = !_hidePassword;
-                    }),
-                    icon: Icon(
-                      _hidePassword ? Icons.visibility : Icons.visibility_off,
+                if (_isRegisterMode)
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      label: Text("Nom d'utilisateur"),
+                      prefixIcon: Icon(Icons.person),
                     ),
+                    validator: Validators.validateUsername,
+                    autovalidateMode: .onUnfocus,
+                    forceErrorText: _usernameError,
+                    onChanged: (_) => resetUsernameError(),
+                    errorBuilder: errorBuilder,
                   ),
-                ),
-                obscureText: _hidePassword,
-                validator: Validators.validatePassword,
-                autovalidateMode: .onUnfocus,
-                errorBuilder: errorBuilder,
-              ),
-
-              if (_generalError.isNotEmpty)
-                Row(
-                  spacing: 8,
-                  children: [
-                    Icon(
-                      Icons.error,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    Flexible(
-                      child: Text(
-                        _generalError.join(", "),
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    label: Text("Mot de passe"),
+                    prefixIcon: Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() {
+                        _hidePassword = !_hidePassword;
+                      }),
+                      icon: Icon(
+                        _hidePassword ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
-                  ],
+                  ),
+                  obscureText: _hidePassword,
+                  validator: Validators.validatePassword,
+                  autovalidateMode: .onUnfocus,
+                  errorBuilder: errorBuilder,
                 ),
-            ],
+
+                if (_generalError.isNotEmpty)
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Icon(
+                        Icons.error,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      Flexible(
+                        child: Text(
+                          _generalError.join(", "),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
         ),
         Expanded(
           flex: 1,
           child: Align(
             alignment: .topCenter,
-            child: Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                OutlinedButton(
-                  onPressed: switchMode,
-                  child: Text(_isRegisterMode ? "Se connecter" : "S'inscrire"),
-                ),
-                FilledButton(
-                  onPressed: () async => _isRegisterMode
-                      ? await sendRegister()
-                      : await sendLogin(),
-                  child: Text(
-                    _isRegisterMode ? "Créer un compte" : "Connexion",
+            child: Padding(
+              padding: EdgeInsetsGeometry.only(top: 8),
+              child: Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  OutlinedButton(
+                    onPressed: switchMode,
+                    child: Text(
+                      _isRegisterMode ? "Se connecter" : "S'inscrire",
+                    ),
                   ),
-                ),
-              ],
+                  FilledButton(
+                    onPressed: () async => _isRegisterMode
+                        ? await sendRegister()
+                        : await sendLogin(),
+                    child: Text(
+                      _isRegisterMode ? "Créer un compte" : "Connexion",
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
