@@ -132,7 +132,7 @@ class _CameraState extends State<Camera> {
 
     _cameraController = CameraController(
       camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.veryHigh,
       enableAudio: false,
     );
 
