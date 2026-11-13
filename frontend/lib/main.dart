@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Flutter Demo',
         theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-        routerConfig: goRouter,
+        routerConfig: getGoRouter(_authService),
       ),
     );
   }
