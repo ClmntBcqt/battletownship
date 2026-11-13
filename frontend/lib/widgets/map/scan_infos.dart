@@ -52,10 +52,14 @@ class ScanInfos extends StatelessWidget {
           ),
           ClipRRect(
             borderRadius: .circular(16),
-            child: SizedBox(
-              width: 300,
-              height: 225,
-              child: Image.memory(_township.picture, fit: .cover),
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 10,
+              child: SizedBox(
+                width: 300,
+                height: 225,
+                child: Image.memory(_township.picture, fit: .cover),
+              ),
             ),
           ),
         ],
