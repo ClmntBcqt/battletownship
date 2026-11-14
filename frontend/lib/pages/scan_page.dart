@@ -18,8 +18,8 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: .only(left: 16, right: 16, bottom: 8, top: 64),
+    return SafeArea(
+      minimum: .only(left: 16, right: 16, top: 16),
       child: FutureBuilder(
         future: context.read<ScanService>().fetchMyScans(),
         builder: (context, snapshot) {
