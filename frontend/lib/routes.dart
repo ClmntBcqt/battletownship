@@ -1,7 +1,7 @@
 import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/widgets/auth/auth_page.dart';
-import 'package:frontend/widgets/map/map_page.dart';
-import 'package:frontend/widgets/scans/scan_page.dart';
+import 'package:frontend/pages/auth_page.dart';
+import 'package:frontend/pages/map_page.dart';
+import 'package:frontend/pages/scan_page.dart';
 import 'package:frontend/widgets/shared/main_layout.dart';
 import 'package:go_router/go_router.dart';
 
