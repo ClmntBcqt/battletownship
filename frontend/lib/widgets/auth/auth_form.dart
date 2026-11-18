@@ -177,7 +177,7 @@ class _AuthFormState extends State<AuthForm> {
       clearAllFields();
 
       if (!mounted) return;
-      context.go("/map");
+      context.go("/app/map");
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final isEmailConflictError =
@@ -228,7 +228,7 @@ class _AuthFormState extends State<AuthForm> {
       clearAllFields();
 
       if (!mounted) return;
-      context.go("/map");
+      context.go("/app/map");
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         setState(() {

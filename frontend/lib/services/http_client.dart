@@ -27,4 +27,8 @@ class HttpClient {
   Future<Response> delete(String url, Object? data) async {
     return http.delete(url, data: jsonEncode(data));
   }
+
+  Future<Response> patch(String url, Object? data) async {
+    return http.patch(url, data: data);
+  }
 }

@@ -5,6 +5,7 @@ import 'package:frontend/dtos/login_request.dart';
 import 'package:frontend/dtos/register_request.dart';
 import 'package:frontend/dtos/scan.dart';
 import 'package:frontend/dtos/township.dart';
+import 'package:frontend/dtos/update_user_request.dart';
 import 'package:frontend/dtos/user_infos.dart';
 import 'package:frontend/services/http_client.dart';
 
@@ -58,4 +59,7 @@ class ApiClient {
   Future<void> deleteScans(List<String> scanIds) async {
     await httpClient.delete("/scans", scanIds);
   }
+
+  Future<void> updateUser(UpdateUserRequest request) async =>
+      await httpClient.patch("/auth/me", request);
 }

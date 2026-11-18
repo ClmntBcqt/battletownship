@@ -3,16 +3,16 @@ import 'package:frontend/widgets/fab.dart';
 import 'package:frontend/widgets/shared/navbar.dart';
 import 'package:go_router/go_router.dart';
 
-class MainLayout extends StatefulWidget {
+class AppLayout extends StatefulWidget {
   const new({super.key, required this.child});
 
   final Widget child;
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  State<AppLayout> createState() => _AppLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _AppLayoutState extends State<AppLayout> {
   int _selectedIndex = 0;
 
   @override
@@ -36,10 +36,13 @@ class _MainLayoutState extends State<MainLayout> {
       _selectedIndex = destinationIndex;
     });
 
-    context.go(switch (destinationIndex) {
-      0 => "/map",
-      1 => "/scans",
-      _ => throw Error(),
-    });
+    context.go(
+      "/app${switch (destinationIndex) {
+        0 => "/map",
+        1 => "/scans",
+        2 => "/settings",
+        _ => throw Error(),
+      }}",
+    );
   }
 }

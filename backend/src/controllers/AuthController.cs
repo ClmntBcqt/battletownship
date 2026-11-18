@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Clementbq.BattleTownship.Data;
 using Clementbq.BattleTownship.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,8 @@ namespace Clementbq.BattleTownship.Controllers;
 [Route("[controller]")]
 public class AuthController(
     UserManager<User> userManager,
-    SignInManager<User> signInManager
+    SignInManager<User> signInManager,
+    ApplicationDbContext dbContext
 ) : ControllerBase
 {
     public record RegisterRequest(string Email, string Username, string Password);
@@ -70,7 +72,6 @@ public class AuthController(
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
         User? user = await userManager.FindByEmailAsync(loginRequest.Email);
-
         if (user == null)
         {
             return Unauthorized(UnauthorizedLoginDetails);
@@ -110,12 +111,84 @@ public class AuthController(
 
     [Authorize]
     [HttpGet("me")]
-    public async Task<IActionResult> Test()
+    public IActionResult GetUserInfos()
     {
         return Ok(new
         {
             Email = User.FindFirst(ClaimTypes.Email)?.Value,
             Username = User.FindFirst(ClaimTypes.Name)?.Value,
         });
+    }
+
+    public record UpdateUserRequest(
+        string Username,
+        string Email,
+        string CurrentPassword,
+        string? NewPassword
+    );
+
+    [Authorize]
+    [HttpPatch("me")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+    {
+        User? user = await userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
+
+        if (!await userManager.CheckPasswordAsync(user, request.CurrentPassword))
+        {
+            return Forbid();
+        }
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+        List<IdentityError> errors = [];
+
+        if (request.Username != user.UserName)
+        {
+            var result = await userManager.SetUserNameAsync(user, request.Username);
+            if (!result.Succeeded) errors.AddRange(result.Errors);
+        }
+
+        if (request.Email != user.Email)
+        {
+            var result = await userManager.SetEmailAsync(user, request.Email);
+            if (!result.Succeeded) errors.AddRange(result.Errors);
+        }
+
+        if (request.NewPassword != null)
+        {
+            var result = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!result.Succeeded) errors.AddRange(result.Errors);
+
+        }
+
+        if (errors.Count > 0)
+        {
+            await transaction.RollbackAsync();
+
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                [nameof(IdentityErrorDescriber.DuplicateEmail)] = [.. errors
+                                .Where(e => e.Code == nameof(IdentityErrorDescriber.DuplicateEmail))
+                                .Select(e => e.Description)],
+                [nameof(IdentityErrorDescriber.DuplicateUserName)] = [.. errors
+                                .Where(e => e.Code == nameof(IdentityErrorDescriber.DuplicateUserName))
+                                .Select(e => e.Description)],
+                ["other"] = [.. errors
+                                .Where(e => e.Code != nameof(IdentityErrorDescriber.DuplicateUserName)
+                                    && e.Code != nameof(IdentityErrorDescriber.DuplicateEmail))
+                                .Select(e => e.Description)]
+            })
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "Erreur lors de la mise a jour de l'utilisateur"
+            });
+        }
+
+        await transaction.CommitAsync();
+
+        await signInManager.RefreshSignInAsync(user);
+
+        return Ok();
     }
 }

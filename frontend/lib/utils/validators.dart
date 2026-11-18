@@ -24,6 +24,17 @@ class Validators {
     return null;
   }
 
+  static String? validatePasswordConfirmation(
+    String password,
+    String? passwordConfirmation,
+  ) {
+    if (password != passwordConfirmation) {
+      return "Les mots de passe sont différents";
+    }
+
+    return null;
+  }
+
   static String? validateEmail(String? email) {
     if (email == null || email.trim().isEmpty) {
       return 'Veuillez saisir votre adresse e-mail';

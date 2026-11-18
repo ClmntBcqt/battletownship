@@ -22,7 +22,7 @@ class _AuthPageState extends State<AuthPage> {
 
     authService.isAuthenticated.then((isAuthenticated) {
       if (!mounted) return;
-      if (isAuthenticated) context.go("/map");
+      if (isAuthenticated) context.go("/app/map");
 
       setState(() {
         _isPageLoading = false;
